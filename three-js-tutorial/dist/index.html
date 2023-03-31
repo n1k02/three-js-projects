@@ -10,14 +10,38 @@
         * {
             box-sizing: border-box;
         }
+
         body {
             margin: 0;
             padding: 0;
         }
     </style>
-</head>
+<script defer src="main.js"></script></head>
 <body>
+<script id="vertexShader" type="x-shader/x-vertex">
+    uniform float u_time;
+    varying vec2 vUv;
+    void main() {
+    vUv = uv;
+        float newX = sin(position.x * u_time) * sin(position.y * u_time);
+        vec3 newPosition = vec3(newX, position.y, position.z);
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    }
 
-<script src="./main.js" type="module"></script>
+</script>
+<script id="fragmentShader" type="x-shader/x-fragment">
+    uniform float u_time;
+    uniform vec2 u_resolution;
+    uniform vec2 u_mouse;
+    uniform sampler2D image;
+        varying vec2 vUv;
+    void main() {
+        vec2 st = gl_FragCoord.xy / u_resolution;
+        vec4 texture = texture2D(image, vUv);
+        float effect = abs(tan(texture.x + u_time));
+        gl_FragColor = vec4(vec3(effect), 1.0);
+    }
+
+</script>
 </body>
 </html>
