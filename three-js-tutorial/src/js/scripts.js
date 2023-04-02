@@ -39,22 +39,24 @@ scene.add(axesHelper)
 const gridHelper = new THREE.GridHelper(30)
 scene.add(gridHelper)
 
-camera.position.set(20, 30, 30)
-orbit.update()
+camera.position.set(5, 12, 25)
 
+orbit.update()
+camera.lookAt(-10, 0, 5)
+orbit.target.set(-10, 0, 5)
 
 // box
-const boxGeometry = new THREE.BoxGeometry()
-const boxMaterial = new THREE.MeshBasicMaterial({color: 0xFFaa00})
-const box = new THREE.Mesh(boxGeometry, boxMaterial)
-scene.add(box)
+// const boxGeometry = new THREE.BoxGeometry()
+// const boxMaterial = new THREE.MeshBasicMaterial({color: 0xFFaa00})
+// const box = new THREE.Mesh(boxGeometry, boxMaterial)
+// scene.add(box)
 
 
 // plane
 const planeGeometry = new THREE.PlaneGeometry(30, 30)
 const planeMaterial = new THREE.MeshStandardMaterial({
-    color: 0xFFFFFF,
-    side: THREE.DoubleSide
+    color: 0xffffff,
+    side: THREE.DoubleSide,
 })
 const plane = new THREE.Mesh(planeGeometry, planeMaterial)
 scene.add(plane)
@@ -63,7 +65,7 @@ plane.receiveShadow = true
 
 
 // sphere
-const sphereGeometry = new THREE.SphereGeometry(4, 50, 50);
+const sphereGeometry = new THREE.SphereGeometry(2, 50, 50);
 const sphereMaterial = new THREE.MeshStandardMaterial({
     color: 0x0000ff,
 })
@@ -76,31 +78,85 @@ sphere.castShadow = true
 // light
 
 // ambient light
-const ambientLight = new THREE.AmbientLight(0x333333)
-scene.add(ambientLight)
+// const ambientLight = new THREE.AmbientLight(0xffffff)
+// scene.add(ambientLight)
 
 //directional light
-const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8)
-scene.add(directionalLight)
-directionalLight.position.set(-30, 50, 0)
-directionalLight.castShadow = true
-directionalLight.shadow.camera.bottom = -12
+// const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8)
+// scene.add(directionalLight)
+// directionalLight.position.set(-30, 50, 0)
+// directionalLight.castShadow = true
+// directionalLight.shadow.camera.bottom = -12
 
-// dr-light helper
-const dLightHelper = new THREE.DirectionalLightHelper(directionalLight, 5)
-scene.add(dLightHelper)
 
-// dr-light shadow helper
-const dLightShadowHelper = new THREE.CameraHelper(directionalLight.shadow.camera)
-scene.add(dLightShadowHelper)
+// // dr-light helper
+// const dLightHelper = new THREE.DirectionalLightHelper(directionalLight, 2)
+// scene.add(dLightHelper)
+//
+// // dr-light shadow helper
+// const dLightShadowHelper = new THREE.CameraHelper(directionalLight.shadow.camera)
+// scene.add(dLightShadowHelper)
 
 
 // spotlight
 const spotLight = new THREE.SpotLight('#ffffff')
 scene.add(spotLight)
-spotLight.position.set(-100, 100, 0)
+spotLight.position.set(-50, 50, 0)
 spotLight.castShadow = true
-spotLight.angle = 0.2
+
+
+// car light 1
+const carSpotLight1 = new THREE.SpotLight('#ffffff')
+scene.add(carSpotLight1)
+carSpotLight1.position.set(-20, 20, 0)
+carSpotLight1.castShadow = true
+carSpotLight1.angle = 0.25
+carSpotLight1.penumbra = 0.5
+carSpotLight1.castShadow = true
+
+// car light 2
+const carSpotLight2 = new THREE.SpotLight('#333333')
+scene.add(carSpotLight2)
+carSpotLight2.position.set(-20, 20, 0)
+carSpotLight2.castShadow = true
+carSpotLight2.angle = 0.3
+carSpotLight2.penumbra = 1
+carSpotLight2.castShadow = true
+
+// neon 1
+const neonSpotLight1 = new THREE.SpotLight('#0000ff')
+scene.add(neonSpotLight1)
+neonSpotLight1.position.set(-5, 0.3, 10)
+neonSpotLight1.castShadow = true
+neonSpotLight1.penumbra = 0.04
+neonSpotLight1.angle = 1.6
+
+const targetObject1 = new THREE.Object3D();
+scene.add(targetObject1);
+
+targetObject1.position.set(-5, -1, 10)
+neonSpotLight1.target = targetObject1;
+
+// const neonSpotLight1Helper = new THREE.SpotLightHelper(neonSpotLight1)
+// scene.add(neonSpotLight1Helper)
+
+// neon 2
+const neonSpotLight2 = new THREE.SpotLight('#0000ff')
+scene.add(neonSpotLight2)
+neonSpotLight2.position.set(-12, 0.3, 10)
+neonSpotLight2.castShadow = true
+neonSpotLight2.penumbra = 0.04
+neonSpotLight2.angle = 1.6
+
+const targetObject2 = new THREE.Object3D();
+scene.add(targetObject2);
+
+targetObject2.position.set(-12, -1, 10)
+neonSpotLight2.target = targetObject2;
+
+// const neonSpotLight2Helper = new THREE.SpotLightHelper(neonSpotLight2)
+// scene.add(neonSpotLight2Helper)
+
 
 // sLight helper
 const sLightHelper = new THREE.SpotLightHelper(spotLight)
@@ -109,7 +165,7 @@ scene.add(sLightHelper)
 
 // fog
 // scene.fog = new THREE.Fog('#ffffff', 0, 200)
-scene.fog = new THREE.FogExp2('#ffffff', 0.01)
+scene.fog = new THREE.FogExp2('#000000', 0.02)
 
 
 // change background
@@ -140,7 +196,7 @@ const box2MultiMaterial = [
 // const box2 = new THREE.Mesh(box2Geometry, box2Material)
 const box2 = new THREE.Mesh(box2Geometry, box2MultiMaterial)
 scene.add(box2)
-box2.position.set(0, 15, 10)
+box2.position.set(0, 30, 10)
 
 
 // change the vertex of element
@@ -151,7 +207,7 @@ const plane2Material = new THREE.MeshBasicMaterial({
 })
 const plane2 = new THREE.Mesh(plane2Geometry, plane2Material)
 scene.add(plane2)
-plane2.position.set(10, 10, 15)
+plane2.position.set(50, 10, 10)
 
 
 
@@ -163,15 +219,32 @@ assetLoader.load(m8.href, (gltf) => {
     model.scale.set(2,2,2)
     scene.add(model)
     model.position.set(-12, 0, 10)
-    model.getObjectById(42).material.color.setHex(0x0000ff)
+    model.getObjectByName("VP_Free_BMW_8_vm_T3_024_interior_0").material.color.setHex(0x0000ff)
     console.log(model)
     // clone the model
     const modelClone = SkeletonUtiols.clone(model)
     modelClone.position.set(-5, 0, 10)
     scene.add(modelClone)
+
+    carSpotLight1.target = model
+    carSpotLight2.target = modelClone
+
+    // receive shadow
+    model.traverse((node) => {
+        if(node.isMesh) {
+            node.castShadow = true
+        }
+    })
+    modelClone.traverse((node) => {
+        if(node.isMesh) {
+            node.castShadow = true
+        }
+    })
 }, undefined, (err) => {
     console.log(err)
 })
+
+
 
 // gui settings
 const gui = new dat.GUI();
@@ -180,7 +253,7 @@ const options = {
     sphereColor: '#ffea00',
     wireframe: false,
     speed: 0.01,
-    sLightAngle: 0.2,
+    sLightAngle: 0.07,
     sLightPenumbra: 0,
     sLightIntensity: 1,
     sLightColor: '#ffffff'
@@ -266,7 +339,7 @@ const animate = (time) => {
     uniforms.u_time.value = clock.getElapsedTime()
 
     step += options.speed
-    sphere.position.y = 10 * Math.abs(Math.sin(step))
+    sphere.position.y = (10 * Math.abs(Math.sin(step))) + 2
 
     spotLight.angle = options.sLightAngle
     spotLight.penumbra = options.sLightPenumbra
