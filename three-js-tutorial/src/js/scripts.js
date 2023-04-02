@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import {OrbitControls} from "three/addons/controls/OrbitControls";
+import {OrbitControls} from "three/examples/jsm/controls/OrbitControls.js";
 import * as dat from 'dat.gui'
 import img01 from '../img/01.jpg'
 import img02 from '../img/02.jpg'
@@ -7,12 +7,13 @@ import img03 from '../img/03.jpg'
 import img04 from '../img/04.jpg'
 import bp from '../img/bp.jpg'
 
-import {GLTFLoader} from "three/addons/loaders/GLTFLoader";
-import {uint} from "three/nodes";
+import {GLTFLoader} from "three/examples/jsm/loaders/GLTFLoader";
 import {DoubleSide} from "three";
 
-// const supra = new URL('../assets/toyota_supra.glb', import.meta.url)
-// const m8 = new URL('../assets/m8.glb', import.meta.url)
+// to clone 3D model
+import * as SkeletonUtiols from 'three/examples/jsm/utils/SkeletonUtils.js'
+
+const m8 = new URL('../assets/m8.glb', import.meta.url)
 
 const renderer = new THREE.WebGLRenderer()
 
@@ -156,15 +157,21 @@ plane2.position.set(10, 10, 15)
 
 
 // import 3d models
-// const assetLoader = new GLTFLoader()
-// assetLoader.load(m8.href, (gltf) => {
-//     const model = gltf.scene
-//     model.scale.set(2,2,2)
-//     scene.add(model)
-//     model.position.set(-12, 0, 10)
-// }, undefined, (err) => {
-//     console.log(err)
-// })
+const assetLoader = new GLTFLoader()
+assetLoader.load(m8.href, (gltf) => {
+    const model = gltf.scene
+    model.scale.set(2,2,2)
+    scene.add(model)
+    model.position.set(-12, 0, 10)
+    model.getObjectById(42).material.color.setHex(0x0000ff)
+    console.log(model)
+    // clone the model
+    const modelClone = SkeletonUtiols.clone(model)
+    modelClone.position.set(-5, 0, 10)
+    scene.add(modelClone)
+}, undefined, (err) => {
+    console.log(err)
+})
 
 // gui settings
 const gui = new dat.GUI();

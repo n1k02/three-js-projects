@@ -18,7 +18,7 @@
     </style>
 </head>
 <body>
-<script id="vertexShader" type="x-shader/x-vertex">
+<script id="vertexShader" type="x-vertex">
     uniform float u_time;
     varying vec2 vUv;
     void main() {
@@ -28,8 +28,9 @@
         gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
     }
 
+
 </script>
-<script id="fragmentShader" type="x-shader/x-fragment">
+<script id="fragmentShader" type="x-fragment">
     uniform float u_time;
     uniform vec2 u_resolution;
     uniform vec2 u_mouse;
@@ -43,5 +44,6 @@
     }
 
 </script>
+<script src="js/scripts.js" type="module"></script>
 </body>
 </html>
