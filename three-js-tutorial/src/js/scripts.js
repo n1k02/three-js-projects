@@ -11,8 +11,8 @@ import {GLTFLoader} from "three/addons/loaders/GLTFLoader";
 import {uint} from "three/nodes";
 import {DoubleSide} from "three";
 
-const supra = new URL('../assets/toyota_supra.glb', import.meta.url)
-const m8 = new URL('../assets/m8.glb', import.meta.url)
+// const supra = new URL('../assets/toyota_supra.glb', import.meta.url)
+// const m8 = new URL('../assets/m8.glb', import.meta.url)
 
 const renderer = new THREE.WebGLRenderer()
 
@@ -156,18 +156,15 @@ plane2.position.set(10, 10, 15)
 
 
 // import 3d models
-const assetLoader = new GLTFLoader()
-assetLoader.load(m8.href, (gltf) => {
-    const model = gltf.scene
-    model.scale.set(2,2,2)
-    model.castShadow = true
-    model.children.castShadow = true
-    scene.add(model)
-    console.log(model)
-    model.position.set(-12, 0, 10)
-}, undefined, (err) => {
-    console.log(err)
-})
+// const assetLoader = new GLTFLoader()
+// assetLoader.load(m8.href, (gltf) => {
+//     const model = gltf.scene
+//     model.scale.set(2,2,2)
+//     scene.add(model)
+//     model.position.set(-12, 0, 10)
+// }, undefined, (err) => {
+//     console.log(err)
+// })
 
 // gui settings
 const gui = new dat.GUI();
