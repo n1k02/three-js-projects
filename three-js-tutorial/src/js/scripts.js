@@ -10,10 +10,25 @@ import bp from '../img/bp.jpg'
 import {GLTFLoader} from "three/examples/jsm/loaders/GLTFLoader";
 import {DoubleSide} from "three";
 
+
 // to clone 3D model
 import * as SkeletonUtiols from 'three/examples/jsm/utils/SkeletonUtils.js'
 
 const m8 = new URL('../assets/m8.glb', import.meta.url)
+
+
+// Progress bar
+const loadingManager = new THREE.LoadingManager()
+const progressBar = document.getElementById('progress-bar')
+loadingManager.onProgress = (url, loaded, total) => {
+    progressBar.value = (loaded / total) * 100
+}
+const progressBarContainer = document.querySelector('.progress-bar-container')
+loadingManager.onLoad = () => {
+    progressBarContainer.style.display = 'none'
+}
+const assetLoader = new GLTFLoader(loadingManager)
+
 
 const renderer = new THREE.WebGLRenderer()
 
@@ -214,7 +229,6 @@ plane2.position.set(50, 10, 10)
 
 
 // import 3d models
-const assetLoader = new GLTFLoader()
 assetLoader.load(m8.href, (gltf) => {
     const model = gltf.scene
     model.scale.set(2,2,2)
