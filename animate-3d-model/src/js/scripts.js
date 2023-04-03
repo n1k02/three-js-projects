@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 import {OrbitControls} from "three/examples/jsm/controls/OrbitControls.js";
-
+import gsap from 'gsap'
 import {GLTFLoader} from "three/examples/jsm/loaders/GLTFLoader";
 
 const rx7 = new URL('../assets/rx7.glb', import.meta.url)
@@ -23,7 +23,7 @@ const camera = new THREE.PerspectiveCamera(
 
 const orbit = new OrbitControls(camera, renderer.domElement)
 
-camera.position.set(10, 10, 10)
+camera.position.set(7, 5, 1)
 orbit.update()
 
 const grid = new THREE.GridHelper(30, 30)
@@ -32,8 +32,8 @@ scene.add(grid)
 // const ambientLight = new THREE.AmbientLight('#ffffff', 0.1)
 // ambientLight.position.set(-10, 20, 0)
 // scene.add(ambientLight)
-const directLight = new  THREE.DirectionalLight('#ffffff', 1)
-directLight.position.set(0,10,0)
+const directLight = new THREE.DirectionalLight('#ffffff', 1)
+directLight.position.set(0, 10, 0)
 directLight.castShadow = true
 directLight.shadow.mapSize.x = 2048; // default
 directLight.shadow.mapSize.y = 2048; // default
@@ -45,7 +45,7 @@ scene.add(directLight)
 
 
 const plane = new THREE.Mesh(
-    new THREE.PlaneGeometry(30,30),
+    new THREE.PlaneGeometry(30, 30),
     new THREE.MeshStandardMaterial({
         color: '#ffffff'
     })
@@ -54,14 +54,14 @@ plane.rotateX(-Math.PI * 0.5)
 plane.receiveShadow = true
 scene.add(plane)
 
-const cubeRenderTarget = new THREE.WebGLCubeRenderTarget( 2048, {
+const cubeRenderTarget = new THREE.WebGLCubeRenderTarget(2048, {
     generateMipmaps: true,
     minFilter: THREE.LinearMipmapLinearFilter
-} );
+});
 // Create cube camera
-const cubeCamera = new THREE.CubeCamera( 0.1, 1000, cubeRenderTarget );
+const cubeCamera = new THREE.CubeCamera(0.1, 1000, cubeRenderTarget);
 
-scene.add( cubeCamera );
+scene.add(cubeCamera);
 
 
 const sphereGeometry = new THREE.SphereGeometry(2, 50, 50);
@@ -75,7 +75,6 @@ const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial)
 scene.add(sphere)
 sphere.position.set(0, 0.1, 0)
 sphere.castShadow = true
-
 
 
 renderer.outputEncoding = THREE.sRGBEncoding
@@ -96,7 +95,7 @@ assetLoader.load(rx7.href, (gltf) => {
     model.rotateY(-0.8)
     modelObj.add(model)
     model.traverse(node => {
-        if(node.isMesh) {
+        if (node.isMesh) {
             node.castShadow = true
         }
     })
@@ -108,34 +107,95 @@ assetLoader.load(rx7.href, (gltf) => {
     // const action = mixer.clipAction(clip)
     // action.play()
     clips.forEach(clip => {
-        if(clip.name === 'LWheelAction' || clip.name === 'RWheelAcrion') return
+        if (clip.name === 'LWheelAction' || clip.name === 'RWheelAcrion') return
         const action = mixer.clipAction(clip)
         action.play()
-        if(clip.name !== 'HeadlightsUp') {
-        action.setEffectiveTimeScale(10)
+        if (clip.name !== 'HeadlightsUp') {
+            action.setEffectiveTimeScale(10)
         }
     })
 }, undefined, (err) => {
     console.log(err)
 })
 
+// gsap camera animation
+window.addEventListener('mousedown', cameraAnimation)
+let target= new THREE.Vector3()
+const tl = gsap.timeline()
+const ease = 'ease'
+function cameraAnimation() {
+
+        animationIsFinished = true
+
+        tl.to(camera.position, {
+            x: -4,
+            y: 0.5,
+            z: 2,
+            duration: 2,
+            ease,
+            onUpdate: () => {
+                let target = new THREE.Vector3()
+                model.getWorldPosition(target)
+                camera.lookAt(target)
+            }
+        })
+            .to(camera.position, {
+                x: 0,
+                y: 1,
+                z: -5,
+                duration: 3,
+                ease,
+                onUpdate: () => {
+                    model.getWorldPosition(target)
+                    camera.lookAt(target)
+                }
+            })
+            .to({}, {
+                duration: 3,
+                onUpdate: () => {
+                    model.getWorldPosition(target)
+                    camera.lookAt(target)
+                }
+            })
+            .to(camera.position, {
+                x: 7,
+                y: 5,
+                z: 1,
+                duration: 4,
+                ease,
+                onUpdate: () => {
+                    model.getWorldPosition(target)
+                    camera.lookAt(target)
+                }
+            })
+            .to(target, {
+                x: 0,
+                y: 0,
+                z: 0,
+                duration: 2,
+                ease,
+                onUpdate: () => {
+                    camera.lookAt(target)
+                }
+            })
 
 
+}
 
 const clock = new THREE.Clock()
 
 const animate = () => {
     if (mixer) {
-        mixer.update(clock.getDelta() )
+        mixer.update(clock.getDelta())
     }
 
     modelObj.rotateY(-0.01)
 
 
     sphere.visible = false;
-    cubeCamera.position.copy( sphere.position );
+    cubeCamera.position.copy(sphere.position);
 
-    cubeCamera.update( renderer, scene );
+    cubeCamera.update(renderer, scene);
 
 // Render the scene
     sphere.visible = true;
