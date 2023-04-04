@@ -118,6 +118,12 @@ orbit.update()
 // scene.add(sphereMesh)
 
 
+///////////////// renderer color settings /////////////////
+// renderer.outputEncoding = THREE.sRGBEncoding
+// renderer.toneMapping = THREE.ACESFilmicToneMapping
+// renderer.toneMappingExposure = 1.5
+
+
 ///////////////// import 3d models /////////////////
 // const model = new URL('../assets/MODEL_NAME', import.meta.url)
 // const assetLoader = new GLTFLoader()

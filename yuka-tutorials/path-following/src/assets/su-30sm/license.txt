@@ -1,0 +1,11 @@
+Model Information:
+* title:	SU-30SM
+* source:	https://sketchfab.com/3d-models/su-30sm-85efcbd199844215a171016429a3b4cd
+* author:	HappyMexicano7 (https://sketchfab.com/HappyMexicano7)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "SU-30SM" (https://sketchfab.com/3d-models/su-30sm-85efcbd199844215a171016429a3b4cd) by HappyMexicano7 (https://sketchfab.com/HappyMexicano7) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
