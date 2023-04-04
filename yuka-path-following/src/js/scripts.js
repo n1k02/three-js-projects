@@ -1,13 +1,13 @@
 import * as THREE from 'three'
 import {OrbitControls} from "three/examples/jsm/controls/OrbitControls.js";
 // import * as dat from 'dat.gui'
-// import * as SkeletonUtiols from 'three/examples/jsm/utils/SkeletonUtils.js'
-// import {GLTFLoader} from "three/examples/jsm/loaders/GLTFLoader";
+import {GLTFLoader} from "three/examples/jsm/loaders/GLTFLoader";
+import * as YUKA from 'yuka'
 
 const renderer = new THREE.WebGLRenderer()
 renderer.shadowMap.enabled = true
 renderer.setSize(window.innerWidth, window.innerHeight)
-// renderer.setClearColor('#a3a3a3')
+renderer.setClearColor('#222222')
 document.body.appendChild(renderer.domElement)
 
 const scene = new THREE.Scene()
@@ -21,7 +21,7 @@ const camera = new THREE.PerspectiveCamera(
 
 const orbit = new OrbitControls(camera, renderer.domElement)
 
-camera.position.set(10, 10, 10)
+camera.position.set(0, 5, 10)
 orbit.update()
 
 
@@ -35,18 +35,20 @@ orbit.update()
 // scene.add(gridHelper)
 
 
+
 ///////////////// ambient light /////////////////
-// const ambientLight = new THREE.AmbientLight('#ffffff', 0.8)
-// ambientLight.position.set(0, 20, 0)
-// scene.add(ambientLight)
+const ambientLight = new THREE.AmbientLight('#ffffff', 0.2)
+ambientLight.position.set(0, 20, 0)
+scene.add(ambientLight)
 
 
 ///////////////// directional light /////////////////
-// const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8)
-// scene.add(directionalLight)
-// directionalLight.position.set(-30, 50, 0)
-// directionalLight.castShadow = true
+const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8)
+scene.add(directionalLight)
+directionalLight.position.set(0, 10, 10)
+directionalLight.castShadow = true
 // directionalLight.shadow.camera.bottom = -12
+
 
 ///////////////// dr-light helper /////////////////
 // const dLightHelper = new THREE.DirectionalLightHelper(directionalLight, 5)
@@ -119,9 +121,8 @@ orbit.update()
 
 
 ///////////////// import 3d models /////////////////
-// const model = new URL('../assets/MODEL_NAME', import.meta.url)
 // const assetLoader = new GLTFLoader()
-// assetLoader.load(model.href, (gltf) => {
+// assetLoader.load(MODEL_NAME.href, (gltf) => {
 //     const model = gltf.scene
 //     model.scale.set(2,2,2)
 //     scene.add(model)
@@ -152,11 +153,93 @@ orbit.update()
 // })
 
 
+// creating vehicle by mesh
+const vehicle = new YUKA.Vehicle()
 
-// const clock = new THREE.Clock()
+function sync(entity, renderComponent) {
+    renderComponent.matrix.copy(entity.worldMatrix)
+}
 
-const animate = (time) => {
+// path
+const path = new YUKA.Path()
+path.add(new YUKA.Vector3(-4, 0, 4))
+path.add(new YUKA.Vector3(-6, 0, 0))
+path.add(new YUKA.Vector3(-4, 0, -4))
+path.add(new YUKA.Vector3(0, 0, 0))
+path.add(new YUKA.Vector3(4, 0, -4))
+path.add(new YUKA.Vector3(6, 0, 0))
+path.add(new YUKA.Vector3(4, 0, 4))
+path.add(new YUKA.Vector3(0, 0, 6))
 
+// infinite loop
+path.loop = true
+
+// set first _waypoint
+vehicle.position.copy(path.current())
+
+// set standard behavior
+const followPathBehavior = new YUKA.FollowPathBehavior(path, 3) // (path, (distance when the vehicle starts to steer))
+vehicle.steering.add(followPathBehavior)
+
+// to set more control of behavior
+const onPathBehavior = new YUKA.OnPathBehavior(path)
+// onPathBehavior.predictionFactor = 0.3
+// onPathBehavior.radius = 0.5
+onPathBehavior.weight = 2
+vehicle.steering.add(onPathBehavior)
+
+vehicle.maxSpeed = 3
+
+
+// manager to update the vehicle (on animation loop)
+const entityManager = new  YUKA.EntityManager()
+entityManager.add(vehicle)
+
+
+const assetLoader = new GLTFLoader()
+assetLoader.load('./assets/rx7/source/rx7.glb', (gltf) => {
+    const model = gltf.scene
+    scene.add(model)
+    model.matrixAutoUpdate = false
+    vehicle.scale = new YUKA.Vector3(0.5, 0.5, 0.5)
+    vehicle.setRenderComponent(model, sync)
+    // model.position.set(-12, 0, 10)
+}, undefined, (err) => {
+    console.log(err)
+})
+
+
+// creating mesh
+// const vehicleMesh = new THREE.Mesh(
+//     new THREE.ConeBufferGeometry(0.1, 0.5, 8).rotateX(Math.PI * 0.5),
+//     new THREE.MeshNormalMaterial()
+// )
+// vehicleMesh.matrixAutoUpdate = false // to not let threejs update the position of vehicle
+// scene.add(vehicleMesh)
+
+
+
+
+// path rendering
+const position = []
+for (let i = 0; i < path._waypoints.length; i++) {
+    const waypoint = path._waypoints[i]
+    position.push(waypoint.x, waypoint.y, waypoint.z)
+}
+
+const lineGeometry = new THREE.BufferGeometry()
+lineGeometry.setAttribute('position', new THREE.Float32BufferAttribute(position, 3))
+
+const lineMaterial = new THREE.LineBasicMaterial({color: 0x00ff00})
+const lines = new THREE.LineLoop(lineGeometry, lineMaterial)
+scene.add(lines)
+
+const time = new YUKA.Time()
+
+const animate = () => {
+
+    const delta = time.update().getDelta()
+    entityManager.update(delta) // update vehicle
 
     renderer.render(scene, camera)
 }
