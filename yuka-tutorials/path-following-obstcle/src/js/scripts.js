@@ -4,6 +4,7 @@ import {OrbitControls} from "three/examples/jsm/controls/OrbitControls.js";
 import {GLTFLoader} from "three/examples/jsm/loaders/GLTFLoader";
 import * as YUKA from 'yuka'
 import {sRGBEncoding} from "three";
+import * as Skeleton from "three/examples/jsm/utils/SkeletonUtils.js";
 
 const renderer = new THREE.WebGLRenderer()
 renderer.shadowMap.enabled = true
@@ -21,7 +22,8 @@ const camera = new THREE.PerspectiveCamera(
 )
 
 const orbit = new OrbitControls(camera, renderer.domElement)
-
+orbit.enableDamping = true
+orbit.dampingFactor = 1
 camera.position.set(0, 5, 10)
 orbit.update()
 
@@ -200,17 +202,36 @@ entityManager.add(vehicle)
 
 
 // set standard behavior
-const followPathBehavior = new YUKA.FollowPathBehavior(path, 3) // (path, (distance when the vehicle starts to steer))
+const followPathBehavior = new YUKA.FollowPathBehavior(path, 1) // (path, (distance when the vehicle starts to steer))
 vehicle.steering.add(followPathBehavior)
 
 // to set more control of behavior
 const onPathBehavior = new YUKA.OnPathBehavior(path)
-// onPathBehavior.predictionFactor = 0.3
-// onPathBehavior.radius = 0.5
-onPathBehavior.weight = 2
+onPathBehavior.predictionFactor = 0.3
+onPathBehavior.radius = 5
+onPathBehavior.weight = 1
 vehicle.steering.add(onPathBehavior)
 
-vehicle.maxSpeed = 4
+
+vehicle.maxSpeed = 3
+vehicle.smoother = new YUKA.Smoother(10)
+
+
+
+// pursuit behavior
+const chaser1 = new YUKA.Vehicle()
+const chaser2 = new YUKA.Vehicle()
+entityManager.add(chaser1)
+entityManager.add(chaser2)
+
+// const pursuitBehavior = new YUKA.PursuitBehavior(vehicle, 3 )
+const pursuitBehavior1 = new YUKA.OffsetPursuitBehavior(vehicle, new YUKA.Vector3(-1,0,0))
+const pursuitBehavior2 = new YUKA.OffsetPursuitBehavior(vehicle, new YUKA.Vector3(1,0,0))
+chaser1.steering.add(pursuitBehavior1)
+chaser2.steering.add(pursuitBehavior2)
+
+chaser1.maxSpeed = 10
+chaser2.maxSpeed = 10
 
 
 
@@ -218,9 +239,23 @@ const assetLoader = new GLTFLoader()
 assetLoader.load('./assets/rx7/source/rx7.glb', (gltf) => {
     const model = gltf.scene
     scene.add(model)
+    const model2 = Skeleton.clone(model)
+    scene.add(model2)
+    const model3 = Skeleton.clone(model)
+    scene.add(model3)
+    vehicle.boundingRadius = 1.5
+
     model.matrixAutoUpdate = false
     vehicle.scale = new YUKA.Vector3(0.5, 0.5, 0.5)
     vehicle.setRenderComponent(model, sync)
+
+    model2.matrixAutoUpdate = false
+    chaser1.scale = new YUKA.Vector3(0.5,0.5,0.5)
+    chaser1.setRenderComponent(model2, sync)
+
+    model3.matrixAutoUpdate = false
+    chaser2.scale = new YUKA.Vector3(0.5,0.5,0.5)
+    chaser2.setRenderComponent(model3, sync)
     // model.position.set(-12, 0, 10)
 }, undefined, (err) => {
     console.log(err)
@@ -244,6 +279,41 @@ scene.add(lines)
 
 
 
+
+// obstacle
+const obstacleGeometry = new THREE.BoxGeometry(0.5, 0.5, 0.5)
+const obstacleMaterial = new THREE.MeshPhongMaterial()
+
+const obstacleMesh1 = new THREE.Mesh(obstacleGeometry, obstacleMaterial)
+scene.add(obstacleMesh1)
+obstacleMesh1.position.set(-2, 0 ,5)
+const obstacleMesh2 = new THREE.Mesh(obstacleGeometry, obstacleMaterial)
+scene.add(obstacleMesh2)
+obstacleMesh2.position.set(-5, 0 ,-2)
+const obstacleMesh3 = new THREE.Mesh(obstacleGeometry, obstacleMaterial)
+scene.add(obstacleMesh3)
+obstacleMesh3.position.set(5, 0 , -2)
+
+const obstacle1 = new YUKA.GameEntity()
+obstacle1.position.copy(obstacleMesh1.position)
+obstacle1.boundingRadius = 2
+const obstacle2 = new YUKA.GameEntity()
+obstacle2.position.copy(obstacleMesh2.position)
+obstacle2.boundingRadius = 2
+const obstacle3 = new YUKA.GameEntity()
+obstacle3.position.copy(obstacleMesh3.position)
+obstacle3.boundingRadius = 2
+
+const obstacles = []
+obstacles.push(obstacle1, obstacle2, obstacle3)
+
+const obstacleAvoidanceBehavior = new YUKA.ObstacleAvoidanceBehavior(obstacles)
+vehicle.steering.add(obstacleAvoidanceBehavior)
+
+
+
+const vehiclePos = new YUKA.Vector3()
+
 const time = new YUKA.Time()
 
 const animate = () => {
@@ -251,8 +321,12 @@ const animate = () => {
     const delta = time.update().getDelta()
     entityManager.update(delta) // update vehicle
 
+    // camera.lookAt(vehicle.position.x, vehicle.position.y, vehicle.position.z)
+
     renderer.render(scene, camera)
 }
+
+
 
 renderer.setAnimationLoop(animate)
 
