@@ -41,14 +41,16 @@ const composer = new EffectComposer(renderer)
 composer.addPass(renderScene)
 const bloomPass = new UnrealBloomPass(
     new THREE.Vector2(window.innerWidth, window.innerHeight),
-    0.4,
-    0.1,
+    0.3,
+    1,
     0.1
 )
 composer.addPass(bloomPass)
 
-renderer.toneMapping = THREE.CineonToneMapping
+renderer.toneMapping = THREE.LinearToneMapping
 renderer.toneMappingExposure = 1.5
+
+
 
 
 const grid = new THREE.GridHelper(30, 30)
