@@ -1,11 +1,12 @@
 import * as THREE from 'three'
 import {OrbitControls} from "three/examples/jsm/controls/OrbitControls.js";
+import {PointerLockControls} from "three/examples/jsm/controls/PointerLockControls";
 // import * as dat from 'dat.gui'
-import {RGBELoader} from "three/examples/jsm/loaders/RGBELoader.js";
-
-const hdrTextureURL = new URL('../img/loft.hdr', import.meta.url)
+// import * as SkeletonUtiols from 'three/examples/jsm/utils/SkeletonUtils.js'
+// import {GLTFLoader} from "three/examples/jsm/loaders/GLTFLoader";
 
 const renderer = new THREE.WebGLRenderer()
+renderer.setPixelRatio(devicePixelRatio)
 renderer.shadowMap.enabled = true
 renderer.setSize(window.innerWidth, window.innerHeight)
 // renderer.setClearColor('#a3a3a3')
@@ -19,11 +20,38 @@ const camera = new THREE.PerspectiveCamera(
     0.1,
     1000,
 )
+camera.position.set(0, 1, 0)
 
-const orbit = new OrbitControls(camera, renderer.domElement)
 
-camera.position.set(10, 10, 10)
-orbit.update()
+const controls = new PointerLockControls(camera, document.body)
+const blocker = document.getElementById('blocker');
+const instructions = document.getElementById('instructions');
+
+document.addEventListener('click', function () {
+    controls.lock();
+});
+
+// controls.addEventListener( 'lock', function () {
+//
+//     instructions.style.display = 'none';
+//     blocker.style.display = 'none';
+//
+// } );
+//
+// controls.addEventListener( 'unlock', function () {
+//
+//     blocker.style.display = 'block';
+//     instructions.style.display = '';
+//
+// } );
+
+scene.add(controls.getObject());
+
+
+// const orbit = new OrbitControls(camera, renderer.domElement)
+//
+// camera.position.set(10, 10, 10)
+// orbit.update()
 
 
 ///////////////// axs helper /////////////////
@@ -32,8 +60,8 @@ orbit.update()
 
 
 ///////////////// grid helper /////////////////
-// const gridHelper = new THREE.GridHelper(30)
-// scene.add(gridHelper)
+const gridHelper = new THREE.GridHelper(30)
+scene.add(gridHelper)
 
 
 ///////////////// ambient light /////////////////
@@ -119,9 +147,16 @@ orbit.update()
 // scene.add(sphereMesh)
 
 
+///////////////// renderer color settings /////////////////
+// renderer.outputEncoding = THREE.sRGBEncoding
+// renderer.toneMapping = THREE.ACESFilmicToneMapping
+// renderer.toneMappingExposure = 1.5
+
+
 ///////////////// import 3d models /////////////////
+// const model = new URL('../assets/MODEL_NAME', import.meta.url)
 // const assetLoader = new GLTFLoader()
-// assetLoader.load(MODEL_NAME.href, (gltf) => {
+// assetLoader.load(model.href, (gltf) => {
 //     const model = gltf.scene
 //     model.scale.set(2,2,2)
 //     scene.add(model)
@@ -151,47 +186,115 @@ orbit.update()
 //     mousePosition.y = -(e.clientY / window.innerHeight) * 2 + 1
 // })
 
-renderer.outputEncoding = THREE.sRGBEncoding
-renderer.toneMapping = THREE.ACESFilmicToneMapping
-renderer.toneMappingExposure = 1.5
+let moveForward = false;
+let moveBackward = false;
+let moveLeft = false;
+let moveRight = false;
+let canJump = false;
 
-const loader = new RGBELoader()
-loader.load(hdrTextureURL, (texture)=> {
-    texture.mapping = THREE.EquirectangularReflectionMapping
-    scene.background = texture
-    scene.environment = texture
-
-    const sphere = new THREE.Mesh(
-        new THREE.SphereGeometry(2, 50, 50),
-        new THREE.MeshPhysicalMaterial({
-            roughness: 0,
-            metalness: 0,
-            color: '#000000',
-            transmission: 1,
-            ior: 2.33
-        })
-    )
-    scene.add(sphere)
-    // sphere.position.x = 1.5
-
-    // const sphere2 = new THREE.Mesh(
-    //     new THREE.SphereGeometry(1, 50, 50),
-    //     new THREE.MeshStandardMaterial({
-    //         roughness: 0,
-    //         metalness: 0.5,
-    //         color: '#ffffff',
-    //         envMap: texture
-    //     })
-    // )
-    // scene.add(sphere2)
-    // sphere2.position.x = -1.5
-})
+let prevTime = performance.now();
+const velocity = new THREE.Vector3();
+const direction = new THREE.Vector3();
 
 
-// const clock = new THREE.Clock()
+const onKeyDown = function ( event ) {
 
-const animate = (time) => {
+    switch ( event.code ) {
 
+        case 'ArrowUp':
+        case 'KeyW':
+            moveForward = true;
+            break;
+
+        case 'ArrowLeft':
+        case 'KeyA':
+            moveLeft = true;
+            break;
+
+        case 'ArrowDown':
+        case 'KeyS':
+            moveBackward = true;
+            break;
+
+        case 'ArrowRight':
+        case 'KeyD':
+            moveRight = true;
+            break;
+
+        case 'Space':
+            if ( canJump === true ) velocity.y += 350;
+            canJump = false;
+            break;
+
+    }
+
+};
+
+const onKeyUp = function ( event ) {
+
+    switch ( event.code ) {
+
+        case 'ArrowUp':
+        case 'KeyW':
+            moveForward = false;
+            break;
+
+        case 'ArrowLeft':
+        case 'KeyA':
+            moveLeft = false;
+            break;
+
+        case 'ArrowDown':
+        case 'KeyS':
+            moveBackward = false;
+            break;
+
+        case 'ArrowRight':
+        case 'KeyD':
+            moveRight = false;
+            break;
+
+    }
+
+};
+
+document.addEventListener( 'keydown', onKeyDown );
+document.addEventListener( 'keyup', onKeyUp );
+
+
+const animate = () => {
+    const time = performance.now()
+    if (controls.isLocked) {
+
+        const delta = (time - prevTime) / 1000;
+
+        velocity.x -= velocity.x * 10.0 * delta;
+        velocity.z -= velocity.z * 10.0 * delta;
+
+        velocity.y -= 9.8 * 100.0 * delta; // 100.0 = mass
+        direction.z = Number( moveForward ) - Number( moveBackward );
+        direction.x = Number( moveRight ) - Number( moveLeft );
+        direction.normalize(); // this ensures consistent movements in all directions
+
+        if ( moveForward || moveBackward ) velocity.z -= direction.z * 400.0 * delta;
+        if ( moveLeft || moveRight ) velocity.x -= direction.x * 400.0 * delta;
+
+
+        controls.moveRight( - velocity.x * delta );
+        controls.moveForward( - velocity.z * delta );
+
+        controls.getObject().position.y += ( velocity.y * delta ); // new behavior
+
+        if ( controls.getObject().position.y < 1 ) {
+
+            velocity.y = 0;
+            controls.getObject().position.y = 1;
+
+            canJump = true;
+
+        }
+    }
+    prevTime = time;
 
     renderer.render(scene, camera)
 }
