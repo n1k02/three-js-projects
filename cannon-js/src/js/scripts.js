@@ -27,9 +27,9 @@ orbit.update()
 // scene.add(grid)
 
 // light
-// const ambientLight = new THREE.AmbientLight('#ffffff', 0.8)
-// ambientLight.position.set(0, 20, 0)
-// scene.add(ambientLight)
+const ambientLight = new THREE.AmbientLight('#ffffff', 0.8)
+ambientLight.position.set(0, 20, 0)
+scene.add(ambientLight)
 
 
 // create three js objects
@@ -127,6 +127,69 @@ world.addContactMaterial(groundSphereContactMat)
 
 
 
+// constrain
+const size = 0.5
+const space = size * 0.1
+const mass = 1
+const N = 10
+const shape = new CANNON.Box(new CANNON.Vec3(size, size, size))
+
+const geo = new THREE.BoxBufferGeometry()
+const mat = new THREE.MeshPhongMaterial({color: 0xFFEA00})
+
+const meshesArray = []
+const bodiesArray = []
+
+let previous
+
+for (let i = 0; i < N; i++) {
+    const boxBody = new CANNON.Body({
+        shape,
+        mass,
+        position: new CANNON.Vec3(-(N-i-N/2) * (size * 2 + space * 2), 3, 0)
+    })
+    world.addBody(boxBody)
+    bodiesArray.push(boxBody)
+
+    const mesh = new THREE.Mesh(geo, mat)
+    scene.add(mesh)
+    meshesArray.push(mesh)
+
+    if(previous) {
+        const lockConstraint = new CANNON.LockConstraint(boxBody, previous)
+        world.addConstraint(lockConstraint)
+    }
+
+
+    previous = boxBody
+
+}
+
+const leftBody = new CANNON.Body({
+    mass: 0,
+    shape,
+    position: new CANNON.Vec3(-(N/2) * (size * 2 + space * 2), 0, 0)
+})
+world.addBody(leftBody)
+bodiesArray.push(leftBody)
+
+const leftMesh = new THREE.Mesh(geo, mat)
+scene.add(leftMesh)
+meshesArray.push(leftMesh)
+
+const rightBody = new CANNON.Body({
+    mass: 0,
+    shape,
+    position: new CANNON.Vec3(-(-N/2+1) * (size * 2 + space * 2), 0, 0)
+})
+world.addBody(rightBody)
+bodiesArray.push(rightBody)
+
+const rightMesh = new THREE.Mesh(geo, mat)
+scene.add(rightMesh)
+meshesArray.push(rightMesh)
+
+
 const timeStep = 1 / 60
 
 const animate = () => {
@@ -140,6 +203,16 @@ const animate = () => {
 
     sphereMesh.position.copy(sphereBody.position)
     sphereMesh.quaternion.copy(sphereBody.quaternion)
+
+
+
+    // constrain
+    for (let i = 0; i < meshesArray.length; i++) {
+        meshesArray[i].position.copy(bodiesArray[i].position)
+        meshesArray[i].quaternion.copy(bodiesArray[i].quaternion)
+
+    }
+
 
     renderer.render(scene, camera)
 }
