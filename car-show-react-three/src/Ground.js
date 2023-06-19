@@ -37,7 +37,7 @@ export default function Ground() {
                 roughnessMap={roughness}
                 dithering={true}
                 color={[0.015, 0.015, 0.015]}
-                roughness={0.7}
+                roughness={0.6}
                 blur={[1000, 400]} // Blur ground reflections (width, heigt), 0 skips blur
                 mixBlur={30} // How much blur mixes with surface roughness (default = 1)
                 mixStrength={80} // Strength of the reflections

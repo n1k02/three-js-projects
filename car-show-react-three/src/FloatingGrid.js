@@ -19,7 +19,7 @@ export function FloatingGrid() {
   });
 
   return <>
-      <mesh rotation-x={-Math.PI * 0.5} position={[0, 0.425, 0]}>
+      <mesh rotation-x={-Math.PI * 0.5} position={[0, 0.01, 0]}>
       <planeGeometry args={[35, 35]} />
       <meshBasicMaterial
         color={[1, 1, 1]}
