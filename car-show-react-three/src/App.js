@@ -1,4 +1,4 @@
-import React, {Suspense} from 'react';
+import React, {Suspense, useEffect} from 'react';
 import './style.css'
 import {Canvas} from "@react-three/fiber";
 import {CubeCamera, Environment, OrbitControls, PerspectiveCamera, spotLight} from "@react-three/drei";
@@ -16,7 +16,22 @@ import { BlendFunction } from "postprocessing";
 import {FloatingGrid} from "./FloatingGrid";
 
 
+const element = document.documentElement;
+
+// Функция, которая запускает полноэкранный режим
+function enterFullscreen() {
+    if (element.requestFullscreen) {
+        element.requestFullscreen();
+    } else if (element.mozRequestFullScreen) {
+        element.mozRequestFullScreen();
+    } else if (element.webkitRequestFullscreen) {
+        element.webkitRequestFullscreen();
+    } else if (element.msRequestFullscreen) {
+        element.msRequestFullscreen();
+    }
+}
 function CarShow() {
+    document.addEventListener('click', enterFullscreen)
     return (
         <>
             <OrbitControls target={[0, 0.35, 0]} maxPolarAngle={1.45}/>
