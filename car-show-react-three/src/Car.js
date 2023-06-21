@@ -13,7 +13,28 @@ export function Car() {
       (loader) => {
         const dracoLoader = new DRACOLoader();
         dracoLoader.setDecoderPath("https://www.gstatic.com/draco/versioned/decoders/1.5.6/"); // Путь к файлам декодера Draco
+
+        // Добавляем слушателя событий 'progress' к загрузчику
         loader.setDRACOLoader(dracoLoader);
+        loader.load(
+            process.env.PUBLIC_URL + "models/car/rx7.glb",
+            () => {
+              // Код, выполняемый при успешной загрузке
+              console.log("Модель успешно загружена!");
+               document.querySelector('.loading').style.display = 'none'
+            },
+            (xhr) => {
+              // Код, выполняемый во время загрузки
+              const percentLoaded = (xhr.loaded / xhr.total) * 100;
+              console.log(`Загружено: ${percentLoaded}%`);
+            },
+            (error) => {
+              // Код, выполняемый в случае ошибки загрузки
+              console.error("Ошибка загрузки модели:", error);
+                document.querySelector('.loading').innerHTML = 'Error loading 3d model'
+                document.querySelector('.loading').style.color = 'red'
+            }
+        );
       }
   );
 
@@ -37,7 +58,7 @@ export function Car() {
     group.children[1].rotation.x = t;
     group.children[2].rotation.x = t;
     group.children[3].rotation.x = t;
-    console.log(group)
+    // console.log(group)
   });
 
   return <primitive object={gltf.scene} />;
