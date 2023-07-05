@@ -12,8 +12,8 @@ const loadModels = async () => {
 
 
     // let model
-    const rx7 = new URL('../assets/e36-no-wheels.glb', import.meta.url)
-    const rx7_wheel = new URL('../assets/rx7_wheel.glb', import.meta.url)
+    const e36 = new URL('../assets/e36-no-wheels.glb', import.meta.url)
+    const e36_wheel = new URL('../assets/rx7_wheel.glb', import.meta.url)
     const track_url = new URL('../assets/track.glb', import.meta.url)
     const ramp_url = new URL('../assets/ramp.glb', import.meta.url)
     const textureUrl = new URL('../assets/track.png', import.meta.url)
@@ -31,7 +31,7 @@ const loadModels = async () => {
 
     const loadModel = () => {
         return new Promise((resolve) => {
-            loader.load(rx7.href, function (gltf) {
+            loader.load(e36.href, function (gltf) {
                 const model = gltf.scene;
                 model.children[0].rotation.z -= Math.PI / 2;
                 model.scale.set(0.2,0.2,0.2)
@@ -50,7 +50,7 @@ const loadModels = async () => {
 
     const loadWheelModels = () => {
         return new Promise((resolve) => {
-            loader.load(rx7_wheel.href, function (gltf) {
+            loader.load(e36_wheel.href, function (gltf) {
                 const wheelModel = gltf.scene;
                 wheelModel.traverse(node => {
                     if (node.isMesh) {
