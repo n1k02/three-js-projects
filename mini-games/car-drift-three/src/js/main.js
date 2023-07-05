@@ -147,7 +147,7 @@ const resolutionX = 1 / (container.offsetWidth * pixelRatio);
 const resolutionY = 1 / (container.offsetHeight * pixelRatio);
 fxaaPass.material.uniforms['resolution'].value.set(resolutionX, resolutionY);
 
-    const blur = 2; // Измените этот параметр, чтобы изменить степень размытия
+    const blur = 1; // Измените этот параметр, чтобы изменить степень размытия
 
     // Установка параметров размытия
     fxaaPass.material.uniforms['resolution'].value.set(resolutionX * blur, resolutionY * blur);
