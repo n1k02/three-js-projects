@@ -3,18 +3,32 @@
 import {GLTFLoader} from "three/examples/jsm/loaders/GLTFLoader";
 import {DRACOLoader} from "three/examples/jsm/loaders/DRACOLoader";
 import * as THREE from "three";
+import {TextureLoader} from "three";
 
 const loadModels = async () => {
+
+    const loading = document.getElementById('loading')
+    loading.style.display = 'flex'
+
 
     // let model
     const rx7 = new URL('../assets/e36-no-wheels.glb', import.meta.url)
     const rx7_wheel = new URL('../assets/rx7_wheel.glb', import.meta.url)
     const track_url = new URL('../assets/track.glb', import.meta.url)
     const ramp_url = new URL('../assets/ramp.glb', import.meta.url)
+    const textureUrl = new URL('../assets/track.png', import.meta.url)
     const loader = new GLTFLoader();
     const dLoader = new DRACOLoader()
     dLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/')
     loader.setDRACOLoader(dLoader)
+
+    const textureLoader = new TextureLoader()
+    const texture = textureLoader.load(textureUrl.href, (texture) => {
+        return texture
+    }, null, (e)=> {
+        console.log(e)
+    })
+
     const loadModel = () => {
         return new Promise((resolve) => {
             loader.load(rx7.href, function (gltf) {
@@ -26,7 +40,7 @@ const loadModels = async () => {
                 model.traverse(node => {
                     if (node.isMesh) {
                         node.castShadow = true;
-                        node.material.envMapIntensity = 20;
+                        node.material.envMapIntensity = 3;
                     }
                 });
                 resolve(model);
@@ -41,7 +55,7 @@ const loadModels = async () => {
                 wheelModel.traverse(node => {
                     if (node.isMesh) {
                         node.castShadow = true;
-                        node.material.envMapIntensity = 20;
+                        node.material.envMapIntensity = 3;
                     }
                 });
 
@@ -82,7 +96,8 @@ const loadModels = async () => {
                 const track = gltf.scene;
                 // track.children[0].rotation.z -= Math.PI / 2;
                 track.scale.set(15,15,15)
-
+                track.children[0].material.map = texture
+                track.children[0].material.needsUpdate = true
                 track.children[0].position.set(0, 0.004,0);
                 track.traverse(node => {
                     if (node.isMesh) {
@@ -109,6 +124,7 @@ const loadModels = async () => {
         const wheelModels = await loadWheelModels();
         const track = await loadTrack()
         const ramp = await loadRamp()
+        loading.style.display = 'none'
         return {model, wheelModels, track, ramp}
 
 }

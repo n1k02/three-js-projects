@@ -13,7 +13,7 @@ const sceneInit = () => {
     const scene = new THREE.Scene()
 
     const camera = new THREE.PerspectiveCamera(
-        70,
+        75,
         window.innerWidth / window.innerHeight,
         0.1,
         1000,
@@ -28,7 +28,7 @@ const sceneInit = () => {
 
     renderer.outputEncoding = THREE.sRGBEncoding
     renderer.toneMapping = THREE.ACESFilmicToneMapping
-    renderer.toneMappingExposure = 0.5
+    renderer.toneMappingExposure = 2
     const hdrTextureURL = new URL('../assets/envmap.hdr', import.meta.url)
     const loader = new RGBELoader()
     loader.load(hdrTextureURL.href, (texture)=> {

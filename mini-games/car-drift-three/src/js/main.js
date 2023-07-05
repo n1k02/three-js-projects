@@ -25,8 +25,8 @@ stats.showPanel(0)
 document.body.append(stats.dom)
 
 //axs
-const axsHelper = new THREE.AxesHelper(8)
-scene.add(axsHelper)
+// const axsHelper = new THREE.AxesHelper(8)
+// scene.add(axsHelper)
 
 // lights
 import addLights from "./lights";
@@ -104,7 +104,7 @@ groundBody.addShape(groundShape);
 world.addBody(groundBody);
 groundBody.quaternion.setFromEuler(-Math.PI / 2, 0, 0)
 
-const geometry = new THREE.PlaneGeometry(300, 300);
+const geometry = new THREE.PlaneGeometry(200, 200);
 const groundMirror = new Reflector(geometry, {
     clipBias: 0.03,
     textureWidth: window.innerWidth * window.devicePixelRatio,
@@ -117,7 +117,7 @@ scene.add(groundMirror);
 
 const reflectiveMaterial = new THREE.MeshStandardMaterial({
     color: 0xffffff,
-    metalness: 0.2, // Настройка металличности
+    metalness: 0.5, // Настройка металличности
     roughness: 0, // Настройка шероховатости
     opacity: 0.5,
     transparent: true,
@@ -126,18 +126,26 @@ const reflectiveMaterial = new THREE.MeshStandardMaterial({
 
 // Создание шейдерных проходов для постобработки
 const renderPass = new RenderPass(scene, camera);
+const renderPass2 = new RenderPass(scene, camera);
 const fxaaPass = new ShaderPass(FXAAShader);
 const colorCorrectionPass =new ShaderPass(ColorCorrectionShader);
 
 // Создание composer1 для основной постобработки без эффекта размытия
 const composer1 =new EffectComposer(renderer);
-composer1.addPass(renderPass);
-composer1.addPass(colorCorrectionPass);
+composer1.addPass(renderPass2);
+// Создание bloom pass
+const bloomPass = new UnrealBloomPass(
+    0.3, // сила эффекта bloom (значение от 0 до 1)
+    0.4, // радиус эффекта bloom (значение от 0 до 1)
+    0.4, // пороговое значение для эффекта bloom (значение от 0 до 1)
+);
+composer1.addPass(bloomPass);
 
 // Создание composer2 для постобработки с эффектом размытия (FXAA)
 const composer2 = new EffectComposer(renderer);
 composer2.addPass(renderPass);
 composer2.addPass(colorCorrectionPass);
+composer2.addPass(bloomPass)
 composer2.addPass(fxaaPass);
 
 // Настройка параметров FXAA
@@ -155,7 +163,7 @@ fxaaPass.material.uniforms['resolution'].value.set(resolutionX, resolutionY);
 
 
 
-const groundMesh = new THREE.Mesh(new THREE.PlaneGeometry(300, 300, 1, 1), reflectiveMaterial)
+const groundMesh = new THREE.Mesh(new THREE.PlaneGeometry(200, 200, 1, 1), reflectiveMaterial)
 groundMesh.receiveShadow = true
 scene.add(groundMesh)
 groundMesh.position.set(0, 0, 0)
@@ -365,7 +373,7 @@ const animate = () => {
         }
     }
 
-    // composer1.render();
+    composer1.render();
     composer2.render();
 
     // renderer.render(scene, camera)

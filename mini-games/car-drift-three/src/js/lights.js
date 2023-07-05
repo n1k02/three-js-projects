@@ -6,7 +6,7 @@ const addLights = (scene) => {
     // ambientLight.position.set(10, 10, 10)
     // scene.add(ambientLight)
 
-    const pointLight = new THREE.PointLight(0x0000ff, 1);
+    const pointLight = new THREE.PointLight(0x000000, 1);
     pointLight.position.set(0, 20, 0);
     pointLight.castShadow = true
     pointLight.shadow.mapSize.set(2048, 2048)
