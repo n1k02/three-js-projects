@@ -291,7 +291,7 @@ document.addEventListener('keyup', (event) => {
 })
 
 
-let isDebug = 1
+let isDebug = 0
 const cannonDebugger = new CannonDebugger(scene, world)
 
 
