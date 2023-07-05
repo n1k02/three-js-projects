@@ -66,18 +66,22 @@ const loadModels = async () => {
 
                 let wheelModel1 = wheelModel.clone();
                 wheelModel1.children[0].rotation.y -= -1.58;
+                wheelModel1.position.set(0,0,0.1)
                 wheelModel1Group.add(wheelModel1);
 
                 let wheelModel2 = wheelModel.clone();
                 wheelModel2.children[0].rotation.y += -1.58;
+                wheelModel2.position.set(0,0,-0.1)
                 wheelModel2Group.add(wheelModel2);
 
                 let wheelModel3 = wheelModel.clone();
                 wheelModel3.children[0].rotation.y -= -1.58;
+                wheelModel3.position.set(0,0,0.1)
                 wheelModel3Group.add(wheelModel3);
 
                 let wheelModel4 = wheelModel.clone();
                 wheelModel4.children[0].rotation.y += -1.58;
+                wheelModel4.position.set(0,0,-0.1)
                 wheelModel4Group.add(wheelModel4);
                 const wheelModels = []
                 wheelModels.push(wheelModel1Group);

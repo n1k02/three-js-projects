@@ -71,7 +71,9 @@ loadModels().then((res) => {
 
     scene.add(track)
     scene.add(model)
-    wheels.forEach(wheel => scene.add(wheel))
+    wheels.forEach(wheel => {
+        scene.add(wheel)
+    })
 })
 
 
@@ -191,7 +193,7 @@ let cameraMode = 3
 document.addEventListener('keydown', (event) => {
     const maxSteerVal = 0.82
     const maxForce = 30000
-    const brakeForce = 10000
+    const brakeForce = 1000000
 
     switch (event.key) {
         case 'w':
@@ -289,7 +291,7 @@ document.addEventListener('keyup', (event) => {
 })
 
 
-let isDebug = 0
+let isDebug = 1
 const cannonDebugger = new CannonDebugger(scene, world)
 
 
