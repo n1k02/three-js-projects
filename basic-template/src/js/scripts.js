@@ -133,6 +133,11 @@ orbit.update()
 //     model.scale.set(2,2,2)
 //     scene.add(model)
 //     model.position.set(-12, 0, 10)
+// model.traverse(node => {
+//     if (node.isMesh) {
+//         node.castShadow = true
+//     }
+// })
 // }, undefined, (err) => {
 //     console.log(err)
 // })
