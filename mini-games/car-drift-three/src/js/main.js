@@ -128,20 +128,15 @@ const reflectiveMaterial = new THREE.MeshStandardMaterial({
 
 // Создание шейдерных проходов для постобработки
 const renderPass = new RenderPass(scene, camera);
-const renderPass2 = new RenderPass(scene, camera);
 const fxaaPass = new ShaderPass(FXAAShader);
 const colorCorrectionPass =new ShaderPass(ColorCorrectionShader);
 
-// Создание composer1 для основной постобработки без эффекта размытия
-const composer1 =new EffectComposer(renderer);
-composer1.addPass(renderPass2);
 // Создание bloom pass
 const bloomPass = new UnrealBloomPass(
     0.3, // сила эффекта bloom (значение от 0 до 1)
     0.4, // радиус эффекта bloom (значение от 0 до 1)
     0.4, // пороговое значение для эффекта bloom (значение от 0 до 1)
 );
-composer1.addPass(bloomPass);
 
 // Создание composer2 для постобработки с эффектом размытия (FXAA)
 const composer2 = new EffectComposer(renderer);
@@ -323,6 +318,24 @@ document.addEventListener('wheel', (e)=> {
     }
 })
 
+const mirror = document.getElementById('isMirror')
+const postProcecssing = document.getElementById('isPostProcessing')
+mirror.addEventListener('change', (e)=> {
+    if(mirror.checked) {
+        scene.add(groundMirror)
+    } else {
+        scene.remove(groundMirror)
+    }
+})
+postProcecssing.addEventListener('change', (e)=> {
+    if(postProcecssing.checked) {
+        composer2.addPass(bloomPass)
+        composer2.addPass(fxaaPass)
+    } else {
+        composer2.removePass(bloomPass)
+        composer2.removePass(fxaaPass)
+    }
+})
 
 
 const timeStep = 1 / 60
@@ -333,7 +346,7 @@ const animate = () => {
     world.step(timeStep)
     if (isDebug) cannonDebugger.update()
 
-    for (let i = 0; i < vehicle.wheelInfos.length; i++) {
+       for (let i = 0; i < vehicle.wheelInfos.length; i++) {
         vehicle.updateWheelTransform(i)
         const transform = vehicle.wheelInfos[i].worldTransform
         const wheelBody = wheelBodies[i]
@@ -375,7 +388,6 @@ const animate = () => {
         }
     }
 
-    composer1.render();
     composer2.render();
 
     // renderer.render(scene, camera)
