@@ -1,21 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Stack Game</title>
-  <link rel="stylesheet" href="./style.css">
-  <script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
-
-  <script type="importmap">
-  {
-    "imports": {
-      "three": "https://unpkg.com/three@v0.154.0/build/three.module.js",
-      "three/addons/": "https://unpkg.com/three@v0.154.0/examples/jsm/"
-    }
-  }
-</script>
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css">
+    <title>Vite App</title>
+  </head>
+  <body>
   <div id="instructions">
     <div class="content">
       <p>Stack the blocks on top of each other</p>
@@ -28,9 +20,7 @@
       <p>To reset the game press R</p>
     </div>
   </div>
-<div id="score">0</div>
-  <script ></script>
-  <script></script>
-  <script src="./main.js"></script>
-</body>
+  <div id="score">0</div>
+    <script type="module" src="/main.js"></script>
+  </body>
 </html>
