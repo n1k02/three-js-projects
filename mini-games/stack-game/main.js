@@ -70,6 +70,7 @@ function init() {
     renderer = new THREE.WebGLRenderer({antialias: true})
     renderer.setSize(window.innerWidth, window.innerHeight)
     renderer.setAnimationLoop(animate)
+    renderer.setPixelRatio(window.devicePixelRatio)
     document.body.append(renderer.domElement)
 }
 
