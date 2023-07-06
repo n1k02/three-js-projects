@@ -3,6 +3,8 @@ My ThreeJS (3D) projects:
 <br>
 drift-game: https://nik-car-drift-game.netlify.app/
 <br>
+stack-game: https://nik-stack-game.netlify.app/
+<br>
 car-show: https://nik-car-show.netlify.app/
 <br>
 basic 3d animation: https://nik-3d-animation.netlify.app/
