@@ -165,16 +165,15 @@ function cutBox(topLayer, overlap, size, delta) {
 }
 
 window.addEventListener('mousedown', eventHandler)
-window.addEventListener('touchstart', eventHandler)
+// window.addEventListener('touchstart', eventHandler)
+resultsElement.addEventListener('click', (event)=> {
+    event.preventDefault()
+    startGame()
+})
 window.addEventListener('keydown', (event) => {
     if (event.key == ' ') {
         event.preventDefault()
         eventHandler()
-        return
-    }
-    if (event.key == "R" || event.key == 'r') {
-        event.preventDefault()
-        startGame()
         return
     }
 })
@@ -271,7 +270,7 @@ function animate (time) {
         } else {
             if(autopilot) {
                 splitBlockAndNextOneIfOverlaps()
-                setRobotPresition()
+                setRobotPrecision()
             }
         }
 

@@ -17,7 +17,7 @@ canvas {
 #instructions {
   display: none;
 }
-#results, body:hover #instructions {
+#results, #instructions {
   position: absolute;
   display: flex;
   align-items: center;
