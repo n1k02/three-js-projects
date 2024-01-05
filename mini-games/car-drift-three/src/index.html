@@ -2,8 +2,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="orientation" content="portrait">
+
     <title>Document</title>
     <style>
         body{
@@ -61,7 +63,7 @@
             justify-content: space-between;
             position: absolute;
             width: 100%;
-            bottom: 20px;
+            bottom: 40px;
 
         }
 
@@ -86,8 +88,8 @@
         
         #camera-control {
             position: absolute;
-            top: 50px;
-            left: 0;
+            top: 20px;
+            left: 70px;
         }
 
         .control-group {
@@ -96,6 +98,18 @@
     </style>
 </head>
 <body>
+    <script>
+        let resizeTimeout;
+
+        function reloadPage() {
+            location.reload();
+        }
+
+        window.addEventListener('resize', function() {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(reloadPage, 0); // Задержка в 500 миллисекунд перед перезагрузкой
+        });
+    </script>
 <div id="loading">Loading...</div>
 <div id="container"></div>
 <div id="info" class="info">
@@ -139,20 +153,21 @@
     </div>
 </div>
 <script>
-    // Проверяем, поддерживает ли браузер Fullscreen API
-    if (document.documentElement.requestFullscreen) {
-        // Вызываем метод requestFullscreen для элемента <html> при загрузке страницы
-        document.documentElement.requestFullscreen()
-            .then(() => {
-                // Действия после успешного входа в полноэкранный режим
-                console.log('Entered fullscreen mode');
-            })
-            .catch((error) => {
-                // Обработка ошибки
-                console.error('Error entering fullscreen mode:', error);
-            });
-    }
+    document.addEventListener('DOMContentLoaded', () => {
+        document.documentElement.addEventListener('click', () => {
+            if (document.documentElement.requestFullscreen) {
+                document.documentElement.requestFullscreen()
+                    .then(() => {
+                        console.log('Entered fullscreen mode');
+                    })
+                    .catch((error) => {
+                        console.error('Error entering fullscreen mode:', error);
+                    });
+            }
+        });
+    });
 </script>
+
 <script src="js/main.js" type="module"></script>
 </body>
 </html>
