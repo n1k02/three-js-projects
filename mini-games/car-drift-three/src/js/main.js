@@ -185,7 +185,7 @@ world.addContactMaterial(body_ground);
 // Add force on keydown
 let cameraMode = 3;
 const maxSteerVal = 0.82;
-const maxForce = 30000;
+const maxForce = 60000;
 const brakeForce = 1000000;
 document.addEventListener("keydown", (event) => {
   switch (event.key) {
@@ -406,7 +406,7 @@ postProcecssing.addEventListener("change", (e) => {
   }
 });
 
-const timeStep = 1 / 60;
+const timeStep = 1 / 130;
 
 const animate = () => {
   stats.begin();
@@ -468,7 +468,7 @@ window.addEventListener("resize", () => {
   renderer.setSize(window.innerWidth, window.innerHeight);
 
   renderer.setSize(container.offsetWidth, container.offsetHeight);
-  composer1.setSize(container.offsetWidth, container.offsetHeight);
+//   composer1.setSize(container.offsetWidth, container.offsetHeight);
   composer2.setSize(container.offsetWidth, container.offsetHeight);
 
   const pixelRatio = renderer.getPixelRatio();
