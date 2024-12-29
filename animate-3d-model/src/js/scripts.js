@@ -6,6 +6,9 @@ import {GLTFLoader} from "three/examples/jsm/loaders/GLTFLoader";
 import {RenderPass} from "three/examples/jsm/postprocessing/RenderPass";
 import {EffectComposer} from "three/examples/jsm/postprocessing/EffectComposer";
 import {UnrealBloomPass} from "three/examples/jsm/postprocessing/UnrealBloomPass";
+import {FXAAShader} from "three/examples/jsm/shaders/FXAAShader.js";
+import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
+import { RGBShiftShader } from 'three/examples/jsm/shaders/RGBShiftShader.js';
 
 const rx7 = new URL('../assets/rx7.glb', import.meta.url)
 const girl = new URL('../assets/girl.glb', import.meta.url)
@@ -30,37 +33,55 @@ const camera = new THREE.PerspectiveCamera(
 
 const orbit = new OrbitControls(camera, renderer.domElement)
 
-camera.position.set(7, 5, 1)
+camera.position.set(0, 5, 6)
 orbit.update()
 
 
 
-// post processing
-const renderScene = new RenderPass(scene, camera)
-const composer = new EffectComposer(renderer)
-composer.addPass(renderScene)
+// Post-processing setup
+const renderScene = new RenderPass(scene, camera);
+const composer = new EffectComposer(renderer);
+composer.addPass(renderScene);
+
+// Bloom effect
 const bloomPass = new UnrealBloomPass(
     new THREE.Vector2(window.innerWidth, window.innerHeight),
-    0.3,
-    1,
-    0.1
-)
-composer.addPass(bloomPass)
+    0.4, // strength
+    1.5, // radius
+    0.5  // threshold
+);
+composer.addPass(bloomPass);
 
-renderer.toneMapping = THREE.LinearToneMapping
-renderer.toneMappingExposure = 1.5
+// FXAA (Fast Approximate Anti-Aliasing)
+const fxaaPass = new ShaderPass(FXAAShader);
+const pixelRatio = renderer.getPixelRatio();
+fxaaPass.material.uniforms['resolution'].value.set(
+    1 / (window.innerWidth * pixelRatio),
+    1 / (window.innerHeight * pixelRatio)
+);
+composer.addPass(fxaaPass);
+
+// RGB Shift effect for a stylized look
+const rgbShiftPass = new ShaderPass(RGBShiftShader);
+rgbShiftPass.uniforms['amount'].value = 0.002; // Adjust shift intensity
+composer.addPass(rgbShiftPass);
+
+// Update renderer settings
+renderer.outputEncoding = THREE.sRGBEncoding;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.5;
 
 
 
 
-const grid = new THREE.GridHelper(30, 30)
-scene.add(grid)
+// const grid = new THREE.GridHelper(30, 30)
+// scene.add(grid)
 
 const ambientLight = new THREE.AmbientLight('#ffffff', 0.1)
 ambientLight.position.set(-10, 20, 0)
 scene.add(ambientLight)
-const directLight = new THREE.DirectionalLight('#ffffff', 1)
-directLight.position.set(0, 10, 0)
+const directLight = new THREE.DirectionalLight('#ffffff', 0.5)
+directLight.position.set(0, 10, 10)
 directLight.castShadow = true
 directLight.shadow.mapSize.x = 2048; // default
 directLight.shadow.mapSize.y = 2048; // default
@@ -104,10 +125,6 @@ scene.add(cubeCamera);
 // sphere.castShadow = true
 
 
-// renderer.outputEncoding = THREE.sRGBEncoding
-// renderer.toneMapping = THREE.ACESFilmicToneMapping
-// renderer.toneMappingExposure = 1
-
 
 const modelObj = new THREE.Object3D()
 scene.add(modelObj)
@@ -139,7 +156,7 @@ assetLoader.load(rx7.href, (gltf) => {
         const action = mixer1.clipAction(clip)
         action.play()
         if (clip.name !== 'HeadlightsUp') {
-            action.setEffectiveTimeScale(10)
+            action.setEffectiveTimeScale(15)
         }
     })
 }, undefined, (err) => {
@@ -150,7 +167,7 @@ let mixer2;
 assetLoader.load(girl.href, (gltf) => {
     let model2 = gltf.scene
     console.log(model2)
-    model2.scale.set(0.2,0.2,0.2)
+    model2.scale.set(0.15,0.15,0.15)
     // model.position.set(4, 0.3, 0)
     // model.rotateY(-0.8)
     scene.add(model2)
@@ -250,7 +267,7 @@ const animate = () => {
         mixer2.update(clock2.getDelta())
     }
 
-    modelObj.rotateY(-0.01)
+    modelObj.rotateY(-0.008)
 
 
     // sphere.visible = false;
