@@ -12,6 +12,7 @@ import { RGBShiftShader } from 'three/examples/jsm/shaders/RGBShiftShader.js';
 
 const rx7 = new URL('../assets/rx7.glb', import.meta.url)
 const girl = new URL('../assets/girl.glb', import.meta.url)
+const yo10 = new URL('../assets/exported.glb', import.meta.url)
 
 
 const renderer = new THREE.WebGLRenderer()
@@ -46,9 +47,9 @@ composer.addPass(renderScene);
 // Bloom effect
 const bloomPass = new UnrealBloomPass(
     new THREE.Vector2(window.innerWidth, window.innerHeight),
-    0.4, // strength
-    1.5, // radius
-    0.5  // threshold
+    0.25, // strength
+    0.5, // radius
+    0.1  // threshold
 );
 composer.addPass(bloomPass);
 
@@ -63,7 +64,7 @@ composer.addPass(fxaaPass);
 
 // RGB Shift effect for a stylized look
 const rgbShiftPass = new ShaderPass(RGBShiftShader);
-rgbShiftPass.uniforms['amount'].value = 0.002; // Adjust shift intensity
+rgbShiftPass.uniforms['amount'].value = 0.003; // Adjust shift intensity
 composer.addPass(rgbShiftPass);
 
 // Update renderer settings
@@ -164,10 +165,10 @@ assetLoader.load(rx7.href, (gltf) => {
 })
 
 let mixer2;
-assetLoader.load(girl.href, (gltf) => {
+assetLoader.load(yo10.href, (gltf) => {
     let model2 = gltf.scene
     console.log(model2)
-    model2.scale.set(0.15,0.15,0.15)
+    model2.scale.set(2,2,2)
     // model.position.set(4, 0.3, 0)
     // model.rotateY(-0.8)
     scene.add(model2)
