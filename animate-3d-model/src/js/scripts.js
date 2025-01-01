@@ -57,14 +57,14 @@ composer.addPass(bloomPass);
 const fxaaPass = new ShaderPass(FXAAShader);
 const pixelRatio = renderer.getPixelRatio();
 fxaaPass.material.uniforms['resolution'].value.set(
-    1 / (window.innerWidth * pixelRatio),
-    1 / (window.innerHeight * pixelRatio)
+    1.5 / (window.innerWidth * pixelRatio),
+    1.5 / (window.innerHeight * pixelRatio)
 );
 composer.addPass(fxaaPass);
 
 // RGB Shift effect for a stylized look
 const rgbShiftPass = new ShaderPass(RGBShiftShader);
-rgbShiftPass.uniforms['amount'].value = 0.003; // Adjust shift intensity
+rgbShiftPass.uniforms['amount'].value = 0.001; // Adjust shift intensity
 composer.addPass(rgbShiftPass);
 
 // Update renderer settings
