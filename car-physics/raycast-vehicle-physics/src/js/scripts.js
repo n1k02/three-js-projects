@@ -107,7 +107,7 @@ chassisBody.addShape(chassisShape)
 // car position
 // chassisBody.position.set(-30, 4, -2)
 chassisBody.position.set(0, 4, 0)
-chassisBody.angularVelocity.set(0, 4, 0)
+chassisBody.angularVelocity.set(0, -5, 0)
 // demo.addVisual(chassisBody)
 
 // Create the vehicle
