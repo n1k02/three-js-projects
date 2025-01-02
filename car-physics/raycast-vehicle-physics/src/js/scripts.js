@@ -4,7 +4,7 @@ import * as CANNON from 'cannon-es'
 import Debugger from 'cannon-es-debugger'
 import {GLTFLoader} from "three/examples/jsm/loaders/GLTFLoader";
 import {DRACOLoader} from "three/examples/jsm/loaders/DRACOLoader";
-import * as Stats from 'stats.js'
+// import * as Stats from 'stats'
 import {Reflector} from "three/examples/jsm/objects/Reflector";
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
@@ -41,9 +41,9 @@ const orbit = new OrbitControls(camera, renderer.domElement)
 camera.position.set(10, 10, 10)
 orbit.update()
 
-const stats = new Stats()
-stats.showPanel(0)
-document.body.append(stats.dom)
+// const stats = new Stats()
+// stats.showPanel(0)
+// document.body.append(stats.dom)
 
 
 const axsHelper = new THREE.AxesHelper(8)
@@ -433,14 +433,14 @@ document.addEventListener('keyup', (event) => {
 })
 
 
-// const cannonDebugger = new Debugger(scene, world)
+const cannonDebugger = new Debugger(scene, world)
 
-const timeStep = 1 / 60
+const timeStep = 1 / 160
 
 const animate = () => {
-    stats.begin();
+    // stats.begin();
     world.step(timeStep)
-    // cannonDebugger.update()
+    cannonDebugger.update()
     // monitored code goes here
 
     for (let i = 0; i < vehicle.wheelInfos.length; i++) {
@@ -467,7 +467,7 @@ const animate = () => {
    composer.render()
 
     // renderer.render(scene, camera)
-    stats.end();
+    // stats.end();
 }
 
 renderer.setAnimationLoop(animate)
