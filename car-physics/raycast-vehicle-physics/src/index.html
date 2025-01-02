@@ -6,6 +6,11 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
     <style>
+        body{
+            position: relative;
+            overflow: hidden;
+            user-select: none; /* Запрет выделения текста */
+        }
         * {
             margin: 0;
             padding: 0;
@@ -13,15 +18,139 @@
         }
         #container {
             position: absolute;
-            top: 0px;
-            width: 100%;
-            bottom: 0px;
+            top: 0;
+            width: 100vw;
+            height: 100vh;
+            left: 0;
             pointer-events: none;
+        }
+        .info{
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: auto;
+            height: auto;
+            background: rgba(0,0,0, 0.5);
+            color: #FFF;
+            font-family: "Comic Sans MS";
+        }
+        .info__list {
+            display: flex;
+            flex-direction: column;
+            list-style: none;
+        }
+        .info__item {
+            flex: 1 1 100%;
+        }
+        #loading {
+            position: absolute;
+            top: 0;
+            left: 0;
+            background: rgba(0,0,0,0.5);
+            color: #fff;
+            /*display: flex;*/
+            justify-content: center;
+            align-items: center;
+            width: 100vw;
+            height: 100vh;
+            font-size: 40px;
+            display: none;
+        }
+        #controls {
+            display: flex;
+            justify-content: space-between;
+            position: absolute;
+            width: 100%;
+            bottom: 40px;
+
+        }
+
+        .control-button {
+            background-color: transparent;
+            border: 2px solid #fff;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            cursor: pointer;
+            color: #FFF;
+        }
+
+       
+        /* Стили для левых и правых блоков */
+        
+        #left-controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }  
+        
+        #camera-control {
+            position: absolute;
+            top: 20px;
+            left: 70px;
+        }
+
+        .control-group {
+            margin: 10px;
         }
     </style>
 </head>
 <body>
+    <!-- <script>
+        let resizeTimeout;
+
+        function reloadPage() {
+            location.reload();
+        }
+
+        window.addEventListener('resize', function() {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(reloadPage, 0); // Задержка в 500 миллисекунд перед перезагрузкой
+        });
+    </script> -->
+<div id="loading">Loading...</div>
 <div id="container"></div>
+<div id="info" class="info">
+    <ul class="info__list">
+        <li class="info__item">
+            <strong>A, W, S, D, SPACE</strong> - Controls
+        </li >
+        <li class="info__item">
+            <strong>C</strong> - Camera controls
+        </li>
+        <!-- <li class="info__item">
+            <strong>R</strong> - Reset car position
+        </li>
+        <li class="info__item">
+            <strong>Arrows</strong> - Rotate the car in the air (beta)
+        </li>
+        <li class="info__item">
+            <input type="checkbox" name="isMirror" id="isMirror" checked>
+            <label for="isMirror">Mirror</label>
+        </li>
+        <li class="info__item">
+            <input type="checkbox" name="isBloom" id="isPostProcessing" checked>
+            <label for="isPostProcessing">Post-Processing</label>
+        </li> -->
+    </ul>
+</div>
+
+
+<!-- <button class="control-button" id="camera-control">Camera</button>
+<div id="controls">
+
+    <div id="left-controls" class="control-group">
+        <button id="gas" class="control-button">GAS</button>
+        <button id="brake" class="control-button">BREAK</button>
+    </div>
+
+
+    <div id="right-controls" class="control-group">
+        <button id="left-turn" class="control-button">L</button>
+        <button id="right-turn" class="control-button">R</button>
+    </div>
+</div> -->
+
 <script src="js/scripts.js" type="module"></script>
 </body>
 </html>

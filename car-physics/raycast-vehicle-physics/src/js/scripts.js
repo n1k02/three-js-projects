@@ -8,11 +8,13 @@ import {DRACOLoader} from "three/examples/jsm/loaders/DRACOLoader";
 import {Reflector} from "three/examples/jsm/objects/Reflector";
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
+
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
 import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
 import { ColorCorrectionShader } from 'three/examples/jsm/shaders/ColorCorrectionShader.js';
 import { FXAAShader } from 'three/examples/jsm/shaders/FXAAShader.js';
-
+import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
+import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry.js';
 
 const renderer = new THREE.WebGLRenderer()
 renderer.shadowMap.enabled = true
@@ -38,7 +40,8 @@ const camera = new THREE.PerspectiveCamera(
 
 const orbit = new OrbitControls(camera, renderer.domElement)
 
-camera.position.set(10, 10, 10)
+// camera.position.set(-15, 1, 5)
+camera.position.set(4, 0.5, 5)
 orbit.update()
 
 // const stats = new Stats()
@@ -46,8 +49,8 @@ orbit.update()
 // document.body.append(stats.dom)
 
 
-const axsHelper = new THREE.AxesHelper(8)
-scene.add(axsHelper)
+// const axsHelper = new THREE.AxesHelper(8)
+// scene.add(axsHelper)
 
 const ambientLight = new THREE.AmbientLight(0xffffff, 1)
 ambientLight.position.set(10,10,10)
@@ -90,7 +93,7 @@ scene.add(pointLight);
 
 ///////////////// fog /////////////////
 // scene.fog = new THREE.Fog('#ffffff', 0, 200)
-// scene.fog = new THREE.FogExp2('#ffffff', 0.01)
+scene.fog = new THREE.FogExp2('#ffffff', 0.02)
 
 
 const world = new CANNON.World({
@@ -101,8 +104,10 @@ const bodyMaterial = new CANNON.Material()
 const chassisShape = new CANNON.Box(new CANNON.Vec3(2, 0.5, 0.8))
 const chassisBody = new CANNON.Body({mass: 150, material: bodyMaterial})
 chassisBody.addShape(chassisShape)
+// car position
+// chassisBody.position.set(-30, 4, -2)
 chassisBody.position.set(0, 4, 0)
-chassisBody.angularVelocity.set(0, 0.5, 0)
+chassisBody.angularVelocity.set(0, 4, 0)
 // demo.addVisual(chassisBody)
 
 // Create the vehicle
@@ -113,17 +118,17 @@ const vehicle = new CANNON.RaycastVehicle({
 const wheelOptions = {
     radius: 0.35,
     directionLocal: new CANNON.Vec3(0, -1, 0),
-    suspensionStiffness: 100,
+    suspensionStiffness: 20,
     suspensionRestLength: 0.4,
     frictionSlip: 0.6,
     dampingRelaxation: 3,
     dampingCompression: 3,
     maxSuspensionForce: 1000,
-    rollInfluence: 0.5,
+    rollInfluence: 1,
     axleLocal: new CANNON.Vec3(0, 0, 1),
     chassisConnectionPointLocal: new CANNON.Vec3(0, 0, 0),
-    maxSuspensionTravel: 0.2,
-    customSlidingRotationalSpeed: -30,
+    maxSuspensionTravel: 0.3,
+    customSlidingRotationalSpeed: -50,
     useCustomSlidingRotationalSpeed: true,
 }
 
@@ -169,7 +174,73 @@ loader.load(
                 node.material.envMapIntensity = 20;
             }
         })
+        addTextToModel(model);
     })
+
+
+    // Lef door 
+function addTextToModel(model) {
+    const fontLoader = new FontLoader();
+    fontLoader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json', (font) => {
+        const text = "I'm fast";
+        const letterSpacing = 0.11; // Расстояние между буквами
+        const material = new THREE.MeshStandardMaterial({ color: 0xff5733 });
+
+        let offsetX = -0.96; // Начальная позиция по X
+        for (const char of text) {
+            const geometry = new TextGeometry(char, {
+                font: font,
+                size: 0.12,
+                height: 0.2,
+                bevelEnabled: true,
+                bevelThickness: 0.1,
+                bevelSize: 0.01,
+                bevelSegments: 12,
+            });
+        
+            const charMesh = new THREE.Mesh(geometry, material);
+            charMesh.position.set(offsetX, -0.1, 0.6); // Расположить букву
+            model.add(charMesh); // Добавить букву в сцену
+            offsetX += letterSpacing;
+        }
+    });
+}
+
+// Rear bumper 
+// function addTextToModel(model) {
+//     const fontLoader = new FontLoader();
+//     fontLoader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json', (font) => {
+//         const text = 'Text';
+//         const letterSpacing = 0.11; // Расстояние между буквами
+//         // const material = new THREE.MeshStandardMaterial({ color: 0xff5733 });
+//         const material = new THREE.MeshStandardMaterial({ color: 0xff1111 });
+
+//         let offsetX = -0.42; // Начальная позиция по X (измените при необходимости)
+
+//         for (const char of text) {
+//             const geometry = new TextGeometry(char, {
+//                 font: font,
+//                 size: 0.12,
+//                 height: 0.01, // Толщина текста
+//                 bevelEnabled: true,
+//                 bevelThickness: 0.01,
+//                 bevelSize: 0.005,
+//                 bevelSegments: 5,
+//             });
+
+//             const charMesh = new THREE.Mesh(geometry, material);
+
+//             // Настройка позиции текста (задний бампер)
+//             charMesh.position.set(1.97, -0.2, -offsetX); // Положение на заднем бампере (измените при необходимости)
+//             charMesh.rotation.set(0, Math.PI / 2, 0); // Поворот текста, чтобы он был на вертикальной поверхности
+
+//             model.add(charMesh); // Добавить букву к модели
+//             offsetX += letterSpacing;
+//         }
+//     });
+// }
+
+
 loader.load(
     rx7_wheel.href,
     function (gltf) {
@@ -241,7 +312,7 @@ vehicle.wheelInfos.forEach((wheel) => {
 
 
 // Add the ground
-const groundMaterial = new CANNON.Material({friction: 0.8})
+const groundMaterial = new CANNON.Material({friction: 0})
 // const sizeX = 64
 // const sizeZ = 64
 // const matrix = []
@@ -277,7 +348,7 @@ const groundMaterial = new CANNON.Material({friction: 0.8})
 
 
 
-const geometry = new THREE.PlaneGeometry(30, 30);
+const geometry = new THREE.PlaneGeometry(100, 100);
 const groundMirror = new Reflector( geometry, {
     clipBias: 0.03,
     textureWidth: window.innerWidth * window.devicePixelRatio,
@@ -289,10 +360,10 @@ groundMirror.rotateX( - Math.PI / 2 );
 scene.add( groundMirror );
 
 const reflectiveMaterial  = new THREE.MeshStandardMaterial({
-    color: 0xffffff,
+    color: 0x000000,
     metalness: 0.2, // Настройка металличности
-    roughness: 0, // Настройка шероховатости
-    opacity: 0.5,
+    roughness: 0.7, // Настройка шероховатости
+    opacity: 0.55,
     transparent: true,
 })
 //
@@ -300,7 +371,7 @@ const composer = new EffectComposer( renderer );
 const renderPass = new RenderPass( scene, camera );
 
 renderPass.clearColor = new THREE.Color( 255, 255, 255 );
-renderPass.clearAlpha = 1;
+renderPass.clearAlpha = 1.5;
 
 const pixelRatio = renderer.getPixelRatio();
 const fxaaPass = new ShaderPass( FXAAShader );
@@ -314,7 +385,8 @@ composer.addPass( bloomPass );
 //
 // // FXAA is engineered to be applied towards the end of engine post processing after conversion to low dynamic range and conversion to the sRGB color space for display.´
 //
-// composer.addPass( fxaaPass );
+
+composer.addPass( fxaaPass );
 
 
 
@@ -322,8 +394,7 @@ composer.addPass( bloomPass );
 
 
 
-
-const groundMesh = new THREE.Mesh(new THREE.PlaneGeometry(30, 30, 1, 1), reflectiveMaterial)
+const groundMesh = new THREE.Mesh(new THREE.PlaneGeometry(100, 100, 1, 1), reflectiveMaterial)
 groundMesh.receiveShadow = true
 scene.add(groundMesh)
 groundMesh.position.set(0,0,0)
@@ -339,15 +410,15 @@ groundBody.quaternion.setFromEuler(-Math.PI / 2, 0, 0)
 
 // Define interactions between wheels and ground
 const wheel_ground = new CANNON.ContactMaterial(wheelMaterial, groundMaterial, {
-    friction: 0,
+    friction: 0.001,
     restitution: 0,
-    contactEquationStiffness: 1000,
+    contactEquationStiffness: 0,
 })
 world.addContactMaterial(wheel_ground)
 const body_ground = new CANNON.ContactMaterial(bodyMaterial, groundMaterial, {
     friction: 0.001,
     restitution: 0,
-    contactEquationStiffness: 100000000,
+    // contactEquationStiffness: 100000000,
 })
 world.addContactMaterial(body_ground)
 
@@ -356,91 +427,114 @@ world.addContactMaterial(body_ground)
 
 
 // Keybindings
-// Add force on keydown
+const keysPressed = {
+    w: false,
+    s: false,
+    a: false,
+    d: false,
+    space: false
+};
+
 document.addEventListener('keydown', (event) => {
-    const maxSteerVal = 0.8
-    const maxForce = 30000
-    const brakeForce = 1000000
+    const maxSteerVal = 0.78;
+    const maxForce = 40000;
+    const brakeForce = 10000;
 
-    switch (event.key) {
-        case 'w':
-        case 'ArrowUp':
-            vehicle.applyEngineForce(-maxForce, 2)
-            vehicle.applyEngineForce(-maxForce, 3)
-            break
-
-        case 's':
-        case 'ArrowDown':
-            vehicle.applyEngineForce(maxForce, 2)
-            vehicle.applyEngineForce(maxForce, 3)
-            break
-
-        case 'a':
-        case 'ArrowLeft':
-            vehicle.setSteeringValue(maxSteerVal, 0)
-            vehicle.setSteeringValue(maxSteerVal, 1)
-            break
-
-        case 'd':
-        case 'ArrowRight':
-            vehicle.setSteeringValue(-maxSteerVal, 0)
-            vehicle.setSteeringValue(-maxSteerVal, 1)
-            break
-
-        case 'b':
-            vehicle.setBrake(brakeForce, 0)
-            vehicle.setBrake(brakeForce, 1)
-            vehicle.setBrake(brakeForce, 2)
-            vehicle.setBrake(brakeForce, 3)
-            break
+    switch (event.code) {
+        case 'KeyW':
+            keysPressed.w = true;
+            break;
+        case 'KeyS':
+            keysPressed.s = true;
+            break;
+        case 'KeyA':
+            keysPressed.a = true;
+            break;
+        case 'KeyD':
+            keysPressed.d = true;
+            break;
+        case 'Space':
+            keysPressed.space = true;
+            break;
     }
-})
 
-// Reset force on keyup
+    // Применяем физику в зависимости от состояния клавиш
+    if (keysPressed.w) {
+        vehicle.applyEngineForce(-maxForce, 2);
+        vehicle.applyEngineForce(-maxForce, 3);
+    }
+
+    if (keysPressed.s) {
+        vehicle.applyEngineForce(maxForce, 2);
+        vehicle.applyEngineForce(maxForce, 3);
+    }
+
+    if (keysPressed.a) {
+        vehicle.setSteeringValue(maxSteerVal, 0);
+        vehicle.setSteeringValue(maxSteerVal, 1);
+    }
+
+    if (keysPressed.d) {
+        vehicle.setSteeringValue(-maxSteerVal, 0);
+        vehicle.setSteeringValue(-maxSteerVal, 1);
+    }
+
+    if (keysPressed.space) {
+        vehicle.setBrake(brakeForce, 2);
+        vehicle.setBrake(brakeForce, 3);
+    }
+});
+
 document.addEventListener('keyup', (event) => {
-    switch (event.key) {
-        case 'w':
-        case 'ArrowUp':
-            vehicle.applyEngineForce(0, 2)
-            vehicle.applyEngineForce(0, 3)
-            break
-
-        case 's':
-        case 'ArrowDown':
-            vehicle.applyEngineForce(0, 2)
-            vehicle.applyEngineForce(0, 3)
-            break
-
-        case 'a':
-        case 'ArrowLeft':
-            vehicle.setSteeringValue(0, 0)
-            vehicle.setSteeringValue(0, 1)
-            break
-
-        case 'd':
-        case 'ArrowRight':
-            vehicle.setSteeringValue(0, 0)
-            vehicle.setSteeringValue(0, 1)
-            break
-
-        case 'b':
-            vehicle.setBrake(0, 0)
-            vehicle.setBrake(0, 1)
-            vehicle.setBrake(0, 2)
-            vehicle.setBrake(0, 3)
-            break
+    switch (event.code) {
+        case 'KeyW':
+            keysPressed.w = false;
+            break;
+        case 'KeyS':
+            keysPressed.s = false;
+            break;
+        case 'KeyA':
+            keysPressed.a = false;
+            break;
+        case 'KeyD':
+            keysPressed.d = false;
+            break;
+        case 'Space':
+            keysPressed.space = false;
+            break;
     }
-})
+
+    // Reset forces when key is released
+    if (!keysPressed.w && !keysPressed.s) {
+        vehicle.applyEngineForce(0, 2);
+        vehicle.applyEngineForce(0, 3);
+    }
+
+    if (!keysPressed.a && !keysPressed.d) {
+        vehicle.setSteeringValue(0, 0);
+        vehicle.setSteeringValue(0, 1);
+    }
+
+    if (!keysPressed.space) {
+        vehicle.setBrake(0, 0);
+        vehicle.setBrake(0, 1);
+        vehicle.setBrake(0, 2);
+        vehicle.setBrake(0, 3);
+    }
+});
 
 
-const cannonDebugger = new Debugger(scene, world)
+
+
+
+// const cannonDebugger = new Debugger(scene, world)
 
 const timeStep = 1 / 160
 
 const animate = () => {
     // stats.begin();
     world.step(timeStep)
-    cannonDebugger.update()
+    // cannonDebugger.update()
     // monitored code goes here
 
     for (let i = 0; i < vehicle.wheelInfos.length; i++) {
@@ -458,6 +552,7 @@ const animate = () => {
 
 
     if (model) {
+        
     // model.position.set(0,0,0)
         model.position.copy(new THREE.Vector3(chassisBody.position.x, chassisBody.position.y, chassisBody.position.z))
         model.quaternion.copy(chassisBody.quaternion)
