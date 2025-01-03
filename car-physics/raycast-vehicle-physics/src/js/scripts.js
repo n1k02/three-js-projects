@@ -182,22 +182,17 @@ loader.load(
         const fontLoader = new FontLoader();
         fontLoader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json', (font) => {
             const text = "@ _n1k_02_";
-            const letterSpacing = 0.05; // Расстояние между буквами
-    
-            // Градиентные цвета Instagram
+            const letterSpacing = 0.05;
             const gradientColors = [0xfeda75, 0xfa7e1e, 0xd62976, 0x962fbf, 0x4f5bd5];
     
-            let offsetX = -0.1; // Начальная позиция по X
+            let offsetX = -0.1;
             let colorIndex = 0;
-            const colorStep = gradientColors.length / text.length; // Шаг изменения цвета
+            const colorStep = gradientColors.length / text.length;
     
-            // Создаем группу для текста
             const textGroup = new THREE.Group();
     
             for (let i = 0; i < text.length; i++) {
                 const char = text[i];
-    
-                // Создать материал с градиентным цветом
                 // const material = new THREE.MeshStandardMaterial({ color: gradientColors[Math.floor(colorIndex)] });
                 const material = new THREE.MeshStandardMaterial({ color: 0xffffff });
     
@@ -209,22 +204,21 @@ loader.load(
                 });
     
                 const charMesh = new THREE.Mesh(geometry, material);
-                charMesh.position.set(offsetX, 0.29, 0.71); // Расположить букву
-                charMesh.rotateX(-0.5)
-                textGroup.add(charMesh); // Добавить букву в группу
-                
+                charMesh.position.set(offsetX, 0.29, 0.71);
+                charMesh.rotateX(-0.5);
+                textGroup.add(charMesh);
+    
                 offsetX += letterSpacing;
-                colorIndex += colorStep; // Перейти к следующему цвету
+                colorIndex += colorStep;
             }
     
-            // Наклоняем всю группу по оси Zvv
-            textGroup.rotation.z = Math.PI / 50; // Пример наклона, можно изменить угол
-            textGroup.rotation.y = Math.PI / 170; // Пример наклона, можно изменить угол
+            textGroup.rotation.z = Math.PI / 50;
+            textGroup.rotation.y = Math.PI / 170;
     
-            // Добавляем группу в модель
             model.add(textGroup);
         });
     }
+    
     
 
 
@@ -245,7 +239,6 @@ loader.load(
     //         for (let i = 0; i < text.length; i++) {
     //             const char = text[i];
     
-    //             // Создать материал с градиентным цветом
     //             const material = new THREE.MeshStandardMaterial({ color: gradientColors[Math.floor(colorIndex)] });
     
     //             const geometry = new TextGeometry(char, {
@@ -294,8 +287,8 @@ loader.load(
 //             const charMesh = new THREE.Mesh(geometry, material);
 
 //             // Настройка позиции текста (задний бампер)
-//             charMesh.position.set(1.97, -0.2, -offsetX); // Положение на заднем бампере (измените при необходимости)
-//             charMesh.rotation.set(0, Math.PI / 2, 0); // Поворот текста, чтобы он был на вертикальной поверхности
+//             charMesh.position.set(1.97, -0.2, -offsetX);
+//             charMesh.rotation.set(0, Math.PI / 2, 0); 
 
 //             model.add(charMesh); // Добавить букву к модели
 //             offsetX += letterSpacing;
