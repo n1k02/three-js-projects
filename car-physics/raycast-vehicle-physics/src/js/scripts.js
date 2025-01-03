@@ -178,33 +178,96 @@ loader.load(
     })
 
 
-    // Lef door 
-function addTextToModel(model) {
-    const fontLoader = new FontLoader();
-    fontLoader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json', (font) => {
-        const text = "I'm fast";
-        const letterSpacing = 0.11; // Расстояние между буквами
-        const material = new THREE.MeshStandardMaterial({ color: 0xff5733 });
+    function addTextToModel(model) {
+        const fontLoader = new FontLoader();
+        fontLoader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json', (font) => {
+            const text = "@ _n1k_02_";
+            const letterSpacing = 0.05; // Расстояние между буквами
+    
+            // Градиентные цвета Instagram
+            const gradientColors = [0xfeda75, 0xfa7e1e, 0xd62976, 0x962fbf, 0x4f5bd5];
+    
+            let offsetX = -0.1; // Начальная позиция по X
+            let colorIndex = 0;
+            const colorStep = gradientColors.length / text.length; // Шаг изменения цвета
+    
+            // Создаем группу для текста
+            const textGroup = new THREE.Group();
+    
+            for (let i = 0; i < text.length; i++) {
+                const char = text[i];
+    
+                // Создать материал с градиентным цветом
+                // const material = new THREE.MeshStandardMaterial({ color: gradientColors[Math.floor(colorIndex)] });
+                const material = new THREE.MeshStandardMaterial({ color: 0xffffff });
+    
+                const geometry = new TextGeometry(char, {
+                    font: font,
+                    size: 0.07,
+                    height: 0.01,
+                    bevelEnabled: false,
+                });
+    
+                const charMesh = new THREE.Mesh(geometry, material);
+                charMesh.position.set(offsetX, 0.29, 0.71); // Расположить букву
+                charMesh.rotateX(-0.5)
+                textGroup.add(charMesh); // Добавить букву в группу
+                
+                offsetX += letterSpacing;
+                colorIndex += colorStep; // Перейти к следующему цвету
+            }
+    
+            // Наклоняем всю группу по оси Zvv
+            textGroup.rotation.z = Math.PI / 50; // Пример наклона, можно изменить угол
+            textGroup.rotation.y = Math.PI / 170; // Пример наклона, можно изменить угол
+    
+            // Добавляем группу в модель
+            model.add(textGroup);
+        });
+    }
+    
 
-        let offsetX = -0.96; // Начальная позиция по X
-        for (const char of text) {
-            const geometry = new TextGeometry(char, {
-                font: font,
-                size: 0.12,
-                height: 0.2,
-                bevelEnabled: true,
-                bevelThickness: 0.1,
-                bevelSize: 0.01,
-                bevelSegments: 12,
-            });
-        
-            const charMesh = new THREE.Mesh(geometry, material);
-            charMesh.position.set(offsetX, -0.1, 0.6); // Расположить букву
-            model.add(charMesh); // Добавить букву в сцену
-            offsetX += letterSpacing;
-        }
-    });
-}
+
+    // Lef door 
+    // function addTextToModel(model) {
+    //     const fontLoader = new FontLoader();
+    //     fontLoader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json', (font) => {
+    //         const text = "@ _n1k_02_";
+    //         const letterSpacing = 0.1; // Расстояние между буквами
+    
+    //         // Градиентные цвета Instagram
+    //         const gradientColors = [0xfeda75, 0xfa7e1e, 0xd62976, 0x962fbf, 0x4f5bd5];
+    
+    //         let offsetX = -0.96; // Начальная позиция по X
+    //         let colorIndex = 0;
+    //         const colorStep = gradientColors.length / text.length; // Шаг изменения цвета
+    
+    //         for (let i = 0; i < text.length; i++) {
+    //             const char = text[i];
+    
+    //             // Создать материал с градиентным цветом
+    //             const material = new THREE.MeshStandardMaterial({ color: gradientColors[Math.floor(colorIndex)] });
+    
+    //             const geometry = new TextGeometry(char, {
+    //                 font: font,
+    //                 size: 0.11,
+    //                 height: 0.2,
+    //                 bevelEnabled: true,
+    //                 bevelThickness: 0.1,
+    //                 bevelSize: 0.01,
+    //                 bevelSegments: 12,
+    //             });
+    
+    //             const charMesh = new THREE.Mesh(geometry, material);
+    //             charMesh.position.set(offsetX, -0.1, 0.6); // Расположить букву
+    //             model.add(charMesh); // Добавить букву в сцену
+    
+    //             offsetX += letterSpacing;
+    //             colorIndex += colorStep; // Перейти к следующему цвету
+    //         }
+    //     });
+    // }
+    
 
 // Rear bumper 
 // function addTextToModel(model) {
